@@ -8,7 +8,7 @@ export const Container = styled(Stack)(() => ({
 
 export const FollowingList = styled("ul")(() => ({
   listStyle: "none",
-  marginTop: "24px",
+  marginTop: "16px",
 }));
 
 export const FollowingListItem = styled("li")(({ theme }) => ({

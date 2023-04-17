@@ -35,7 +35,7 @@ const Friends = ({ userId, fullName, profilePic }: FriendsPropsType) => {
 const Following = () => {
   return (
     <Container>
-      <Typography variant="h4" fontSize="16px" fontWeight="500">
+      <Typography variant="h4" fontSize="15px" fontWeight="500">
         Followings
       </Typography>
       <FollowingList>
