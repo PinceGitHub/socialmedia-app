@@ -13,7 +13,7 @@ import {
   MenuItem,
 } from "@mui/material";
 
-const settings = ["Profile", "Timeline", "Logout"];
+const settings = ["Profile", "Edit Profile", "Logout"];
 
 const Topbar = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
