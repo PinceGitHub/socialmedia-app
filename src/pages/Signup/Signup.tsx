@@ -25,7 +25,7 @@ const Signup = () => {
             variant="standard"
             type="text"
             autoFocus
-            inputProps={{ minLength: 3 }}
+            inputProps={{ minLength: 3, maxLength: 20 }}
           />
           <TextField
             label="Last Name"
@@ -36,7 +36,7 @@ const Signup = () => {
             fullWidth
             variant="standard"
             type="text"
-            inputProps={{ minLength: 3 }}
+            inputProps={{ minLength: 3, maxLength: 20 }}
           />
           <TextField
             label="Email Address"
@@ -47,6 +47,7 @@ const Signup = () => {
             fullWidth
             variant="standard"
             type="email"
+            inputProps={{ maxLength: 50 }}
           />
           <TextField
             label="Password"
@@ -57,7 +58,7 @@ const Signup = () => {
             required
             fullWidth
             variant="standard"
-            inputProps={{ minLength: 6 }}
+            inputProps={{ minLength: 6, maxLength: 20 }}
           />
           <TextField
             label="Confirm Password"
@@ -68,7 +69,7 @@ const Signup = () => {
             required
             fullWidth
             variant="standard"
-            inputProps={{ minLength: 6 }}
+            inputProps={{ minLength: 6, maxLength: 20 }}
           />
           <Button
             type="submit"

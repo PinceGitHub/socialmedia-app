@@ -25,6 +25,7 @@ const Signin = () => {
             autoFocus
             variant="standard"
             type="email"
+            inputProps={{ maxLength: 50 }}
           />
           <TextField
             label="Password"
@@ -35,7 +36,7 @@ const Signin = () => {
             required
             fullWidth
             variant="standard"
-            inputProps={{ minLength: 6 }}
+            inputProps={{ minLength: 6, maxLength: 20 }}
           />
           <Button
             type="submit"
