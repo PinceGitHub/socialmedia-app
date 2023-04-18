@@ -46,7 +46,7 @@ const ChangePassword = ({
             required
             autoFocus
             autoComplete="password"
-            inputProps={{ minLength: 6, maxLength: 100 }}
+            inputProps={{ minLength: 6, maxLength: 20 }}
             sx={{ mt: "8px" }}
           />
           <FormText
@@ -54,14 +54,14 @@ const ChangePassword = ({
             label="New Password"
             variant="outlined"
             required
-            inputProps={{ minLength: 6, maxLength: 50 }}
+            inputProps={{ minLength: 6, maxLength: 20 }}
           />
           <FormText
             id="confirmPassword"
             label="Confirm Password"
             variant="outlined"
             required
-            inputProps={{ minLength: 6, maxLength: 50 }}
+            inputProps={{ minLength: 6, maxLength: 20 }}
           />
           <Stack flexDirection="row" flexWrap="wrap">
             <Button
