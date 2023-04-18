@@ -32,7 +32,7 @@ export const CoverPicture = styled("img")(({ theme }) => ({
     width: "100%",
   },
   [theme.breakpoints.up("md")]: {
-    width: "calc(100% - 40%)",
+    width: "500px",
   },
 }));
 
@@ -44,7 +44,7 @@ export const InfoSection = styled(Stack)(() => ({
 }));
 
 export const InfoText = styled(TextField)(({ theme }) => ({
-  mb: "16px",
+  marginBottom: "16px",
   [theme.breakpoints.up("xs")]: {
     width: "100%",
   },
@@ -57,7 +57,7 @@ export const InfoText = styled(TextField)(({ theme }) => ({
 }));
 
 export const InfoCombo = styled(Autocomplete)(({ theme }) => ({
-  mb: "16px",
+  marginBottom: "16px",
   [theme.breakpoints.up("xs")]: {
     width: "100%",
   },
