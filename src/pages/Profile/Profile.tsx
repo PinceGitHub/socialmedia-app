@@ -13,7 +13,7 @@ import {
   Top,
 } from "./Profile.style";
 import cover_1 from "./SampleImg/cover_1.jpg";
-import EditProfile from "../EditProfile/EditProfile";
+import EditProfile from "../../dialogs/EditProfile/EditProfile";
 
 const Profile = () => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
