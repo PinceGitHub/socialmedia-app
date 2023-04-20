@@ -1,7 +1,12 @@
-import Profile from "./pages/Profile/Profile";
+import { AuthProvider } from "./contexts/AuthProvider";
+import Signin from "./pages/Signin/Signin";
 
 function App() {
-  return <Profile />;
+  return (
+    <AuthProvider>
+      <Signin />
+    </AuthProvider>
+  );
 }
 
 export default App;
