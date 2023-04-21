@@ -117,14 +117,14 @@ const Signin = () => {
             fullWidth
             variant="standard"
             inputProps={{ minLength: 6, maxLength: 20 }}
-            sx={{ mb: 3 }}
+            sx={{ mb: 2 }}
             value={password}
             onChange={(e) =>
               setSignin((prev) => ({ ...prev, password: e.target.value }))
             }
           />
           <FormControlLabel
-            sx={{ mb: 3 }}
+            sx={{ mb: 2 }}
             id="rememberMe"
             name="rememberMe"
             control={
@@ -140,15 +140,26 @@ const Signin = () => {
             }
             label="Remember me"
           />
-          <Link to={appUrls.signUp}>Sign Up</Link>
+
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2, height: "50px" }}
+            sx={{ mb: 2, height: "50px" }}
           >
             Sign In
           </Button>
+          <Link
+            style={{
+              textDecoration: "none",
+              color: "#1976d2",
+              marginBottom: "16px",
+              textAlign: "center",
+            }}
+            to={`/${appUrls.signUp}`}
+          >
+            SIGN UP
+          </Link>
         </Stack>
       </Wrapper>
     </Container>

@@ -12,8 +12,9 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
+import { appUrls } from "../../utils/app-utils";
 
-const settings = ["Profile", "Edit Profile", "Logout"];
+const settings = ["Profile", "Logout"];
 
 const Topbar = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -34,7 +35,7 @@ const Topbar = () => {
               variant="h6"
               noWrap
               component="a"
-              href="/"
+              href={appUrls.home}
               sx={{
                 mr: 2,
                 color: "inherit",
