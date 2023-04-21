@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Topbar from "../../components/Topbar/Topbar";
 import Feed from "../../components/Feed/Feed";
 import Rightbar from "../../components/Rightbar/Rightbar";
 import { Typography, Button } from "@mui/material";
@@ -19,7 +18,6 @@ const Profile = () => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   return (
     <>
-      <Topbar />
       <Container>
         <Top>
           <CoverPicture src={cover_1} />

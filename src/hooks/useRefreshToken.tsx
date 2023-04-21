@@ -1,10 +1,10 @@
 import { AuthUser } from "../contexts/AuthProvider";
 import { serviceUrls } from "../utils/app-utils";
 import { axiosPrivate } from "../utils/axios-utils";
-import useAuthContext from "./useAuthContext";
+import useAuth from "./useAuth";
 
 const useRefreshToken = () => {
-  const { setAuth } = useAuthContext();
+  const { setAuth } = useAuth();
 
   const refresh = async () => {
     const response = await axiosPrivate({

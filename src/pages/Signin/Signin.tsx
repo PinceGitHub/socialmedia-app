@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Container, Wrapper } from "./Signin.style";
 import {
   Avatar,
@@ -9,9 +8,14 @@ import {
   Checkbox,
 } from "@mui/material";
 import { Lock } from "@mui/icons-material";
+
+import { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { appUrls, serviceUrls } from "../../utils/app-utils";
 import { axiosPrivate } from "../../utils/axios-utils";
-import useAuthContext from "../../hooks/useAuthContext";
+import useAuth from "../../hooks/useAuth";
+import useLoader from "../../hooks/useLoader";
+import useSnackbar from "../../hooks/useSnackbar";
 
 type SigninType = {
   email: string;
@@ -20,7 +24,14 @@ type SigninType = {
 };
 
 const Signin = () => {
-  const { setAuth, setPersist } = useAuthContext();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || appUrls.home;
+
+  const { setAuth, setPersist } = useAuth();
+  const showLoader = useLoader();
+  const snackbar = useSnackbar();
+
   const [{ email, password, rememberMe }, setSignin] = useState<SigninType>({
     email: "",
     password: "",
@@ -33,6 +44,8 @@ const Signin = () => {
     e.preventDefault();
 
     try {
+      showLoader(true);
+
       const response = await axiosPrivate({
         url: serviceUrls.auth.login.path,
         method: serviceUrls.auth.login.method,
@@ -46,12 +59,22 @@ const Signin = () => {
           accessToken: response.data.user.accessToken,
         });
         setPersist(rememberMe);
+        navigate(from, { replace: true });
       } else {
-        alert(response.data.message);
+        snackbar({
+          show: true,
+          messageType: "error",
+          message: response.data.message,
+        });
       }
     } catch (error: any) {
-      alert(error.message);
+      snackbar({
+        show: true,
+        messageType: "error",
+        message: error.message,
+      });
     } finally {
+      showLoader(false);
     }
   };
 
@@ -101,6 +124,7 @@ const Signin = () => {
             }
           />
           <FormControlLabel
+            sx={{ mb: 3 }}
             id="rememberMe"
             name="rememberMe"
             control={
@@ -116,6 +140,7 @@ const Signin = () => {
             }
             label="Remember me"
           />
+          <Link to={appUrls.signUp}>Sign Up</Link>
           <Button
             type="submit"
             fullWidth
