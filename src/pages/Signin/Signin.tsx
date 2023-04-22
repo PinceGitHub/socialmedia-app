@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Lock } from "@mui/icons-material";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { appUrls, serviceUrls } from "../../utils/app-utils";
 import { axiosPrivate } from "../../utils/axios-utils";
@@ -28,7 +28,7 @@ const Signin = () => {
   const location = useLocation();
   const from = location.state?.from?.pathname || appUrls.home;
 
-  const { setAuth, setPersist } = useAuth();
+  const { persist, setAuth, setPersist, setFetchTokenResp } = useAuth();
   const showLoader = useLoader();
   const snackbar = useSnackbar();
 
@@ -37,6 +37,15 @@ const Signin = () => {
     password: "",
     rememberMe: false,
   });
+
+  useEffect(() => {
+    setSignin((prev) => ({
+      ...prev,
+      rememberMe: persist,
+    }));
+
+    //eslint-disable-next-line
+  }, [persist]);
 
   const handleSigninFormSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -54,13 +63,28 @@ const Signin = () => {
 
       if (response.data.messageType === "S") {
         setAuth({
-          userId: response.data.user.id,
+          userId: response.data.responseData.user.id,
           email,
-          accessToken: response.data.user.accessToken,
+          accessToken: response.data.responseData.user.accessToken,
         });
+
         setPersist(rememberMe);
+        localStorage.setItem("persist", String(rememberMe));
+
+        setFetchTokenResp({
+          fetched: true,
+          isSuccessful: true,
+          isFailure: false,
+        });
+
         navigate(from, { replace: true });
       } else {
+        setFetchTokenResp({
+          fetched: true,
+          isSuccessful: false,
+          isFailure: true,
+        });
+
         snackbar({
           show: true,
           messageType: "error",
@@ -71,7 +95,7 @@ const Signin = () => {
       snackbar({
         show: true,
         messageType: "error",
-        message: error.message,
+        message: error.response?.data?.message || error.message,
       });
     } finally {
       showLoader(false);

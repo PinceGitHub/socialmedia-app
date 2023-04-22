@@ -6,6 +6,8 @@ import Home from "./pages/Home/Home";
 import Profile from "./pages/Profile/Profile";
 import PageNotFound from "./pages/404/PageNotFound";
 import { appUrls } from "./utils/app-utils";
+import PersistLogin from "./components/PersistLogin/PersistLogin";
+import RequireAuth from "./components/RequireAuth/RequireAuth";
 
 function App() {
   return (
@@ -16,7 +18,15 @@ function App() {
         <Route path={appUrls.signUp} element={<Signup />} />
 
         {/* protected routes */}
-        <Route element={<Layout />}>
+        <Route
+          element={
+            <PersistLogin>
+              <RequireAuth>
+                <Layout />
+              </RequireAuth>
+            </PersistLogin>
+          }
+        >
           <Route index element={<Home />} />
           <Route path={appUrls.profile} element={<Profile />} />
           <Route path={appUrls.followingProfile} element={<Profile />} />

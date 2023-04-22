@@ -1,5 +1,5 @@
-import { Backdrop, CircularProgress } from "@mui/material";
 import { createContext, useState } from "react";
+import Loader from "../components/Loader/Loader";
 
 type LoaderProviderProps = {
   children: React.ReactNode;
@@ -15,12 +15,7 @@ export const LoaderProvider = ({ children }: LoaderProviderProps) => {
   return (
     <LoaderContext.Provider value={showLoader}>
       {children}
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.tooltip + 1 }}
-        open={open}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loader open={open} />
     </LoaderContext.Provider>
   );
 };

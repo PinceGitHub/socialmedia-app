@@ -1,29 +1,46 @@
-import { AuthUser } from "../contexts/AuthProvider";
 import { serviceUrls } from "../utils/app-utils";
 import { axiosPrivate } from "../utils/axios-utils";
-import useAuth from "./useAuth";
+
+type UseRefreshTokenType = {
+  isSuccess: boolean;
+  isError: boolean;
+  data?: {
+    userId: string;
+    email: string;
+    accessToken: string;
+  };
+  error?: any;
+};
 
 const useRefreshToken = () => {
-  const { setAuth } = useAuth();
+  const refresh = async (): Promise<UseRefreshTokenType> => {
+    const retVal: UseRefreshTokenType = {
+      isError: true,
+      isSuccess: false,
+    };
 
-  const refresh = async () => {
-    const response = await axiosPrivate({
-      url: serviceUrls.auth.refreshToken.path,
-      method: serviceUrls.auth.refreshToken.method,
-    });
+    try {
+      const response = await axiosPrivate({
+        url: serviceUrls.auth.refreshToken.path,
+        method: serviceUrls.auth.refreshToken.method,
+      });
 
-    setAuth((prev: AuthUser | null) => {
-      if (prev) {
-        return {
-          ...prev,
-          accessToken: response.data.accessToken,
+      if (response.data.messageType === "S") {
+        retVal.isSuccess = true;
+        retVal.isError = false;
+        retVal.data = {
+          userId: response.data.responseData.user.id,
+          email: response.data.responseData.user.email,
+          accessToken: response.data.responseData.user.accessToken,
         };
       } else {
-        return null;
+        retVal.error = new Error(response.data.message);
       }
-    });
+    } catch (error: any) {
+      retVal.error = error;
+    }
 
-    return response.data.accessToken;
+    return retVal;
   };
 
   return refresh;
