@@ -6,7 +6,7 @@ export const Container = styled(Stack)(() => ({
   borderRadius: "5px",
   WebkitBoxShadow: "0px 0px 17px -8px rgba(0, 0, 0, 0.68)",
   boxShadow: "0px 0px 17px -8px rgba(0, 0, 0, 0.68)",
-  marginTop: "32px",
+  marginBottom: "32px",
 }));
 
 export const Wrapper = styled(Stack)(() => ({

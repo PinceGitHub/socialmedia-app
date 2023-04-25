@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Feed from "../../components/Feed/Feed";
 import Rightbar from "../../components/Rightbar/Rightbar";
 import { Typography, Button } from "@mui/material";
@@ -14,8 +13,13 @@ import {
 import cover_1 from "./SampleImg/cover_1.jpg";
 import EditProfile from "../../dialogs/EditProfile/EditProfile";
 
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+
 const Profile = () => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const { id } = useParams();
+
   return (
     <>
       <Container>
@@ -37,7 +41,7 @@ const Profile = () => {
           </Button>
         </ProfileInfo>
         <Bottom>
-          <Feed />
+          <Feed userId={id} posts={null} />
           <Rightbar />
         </Bottom>
       </Container>

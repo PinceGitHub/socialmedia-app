@@ -29,7 +29,6 @@ function App() {
         >
           <Route index element={<Home />} />
           <Route path={appUrls.profile} element={<Profile />} />
-          <Route path={appUrls.followingProfile} element={<Profile />} />
         </Route>
       </Route>
       {/* catch all */}
