@@ -7,6 +7,9 @@ type UseRefreshTokenType = {
   data?: {
     userId: string;
     email: string;
+    firstName: string;
+    lastName: string;
+    profilePicture: string;
     accessToken: string;
   };
   error?: any;
@@ -29,9 +32,12 @@ const useRefreshToken = () => {
         retVal.isSuccess = true;
         retVal.isError = false;
         retVal.data = {
-          userId: response.data.responseData.user.id,
-          email: response.data.responseData.user.email,
-          accessToken: response.data.responseData.user.accessToken,
+          userId: response.data.responseData.id,
+          email: response.data.responseData.email,
+          firstName: response.data.responseData.firstName,
+          lastName: response.data.responseData.lastName,
+          profilePicture: response.data.responseData.profilePicture,
+          accessToken: response.data.responseData.accessToken,
         };
       } else {
         retVal.error = new Error(response.data.message);

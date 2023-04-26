@@ -3,6 +3,9 @@ import { createContext, useState } from "react";
 type AuthUser = {
   userId: string;
   email: string;
+  firstName: string;
+  lastName: string;
+  profilePicture: string;
   accessToken: string;
 };
 

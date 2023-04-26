@@ -63,9 +63,12 @@ const Signin = () => {
 
       if (response.data.messageType === "S") {
         setAuth({
-          userId: response.data.responseData.user.id,
+          userId: response.data.responseData.id,
           email,
-          accessToken: response.data.responseData.user.accessToken,
+          firstName: response.data.responseData.firstName,
+          lastName: response.data.responseData.lastName,
+          profilePicture: response.data.responseData.profilePicture,
+          accessToken: response.data.responseData.accessToken,
         });
 
         setPersist(rememberMe);

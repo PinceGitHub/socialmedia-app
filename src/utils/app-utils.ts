@@ -35,10 +35,6 @@ export const serviceUrls = {
     },
   },
   posts: {
-    getPostsByUserId: {
-      path: "/post/",
-      method: "GET",
-    },
     getTimeline: {
       path: "/post/timeline",
       method: "POST",

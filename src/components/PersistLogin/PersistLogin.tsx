@@ -20,6 +20,9 @@ const PersistLogin = ({ children }: PersistLoginProps) => {
         setAuth({
           userId: response.data?.userId as string,
           email: response.data?.email as string,
+          firstName: response.data?.firstName as string,
+          lastName: response.data?.lastName as string,
+          profilePicture: response.data?.profilePicture as string,
           accessToken: response.data?.accessToken as string,
         });
 

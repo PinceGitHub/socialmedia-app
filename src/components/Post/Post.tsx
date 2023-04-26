@@ -1,4 +1,4 @@
-import { LinearProgress, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { ThumbUpAlt, Favorite, Delete } from "@mui/icons-material";
 import {
   Container,
@@ -117,11 +117,7 @@ const Post = (props: PostPropsType) => {
               sx={{ cursor: "pointer" }}
               onClick={handleClickUserProfile}
             />
-            {props.firstName === "" ? (
-              <LinearProgress sx={{ width: "40px" }} />
-            ) : (
-              <Typography>{`${props.firstName} ${props.lastName}`}</Typography>
-            )}
+            <Typography>{`${props.firstName} ${props.lastName}`}</Typography>
           </TopLeft>
           <TopRight>
             <Typography mr={1} fontSize="12px">
