@@ -13,7 +13,7 @@ import {
 import noImage from "./image/no-image.png";
 import EditProfile from "../../dialogs/EditProfile/EditProfile";
 
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useLoader from "../../hooks/useLoader";
 import useSnackbar from "../../hooks/useSnackbar";
@@ -26,9 +26,9 @@ const Profile = () => {
   const axios = useAxiosPrivate();
   const showLoader = useLoader();
   const snackbar = useSnackbar();
+  const navigate = useNavigate();
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-
   const [posts, setPosts] = useState<Array<PostPropsType> | null>(null);
 
   useEffect(() => {
@@ -41,16 +41,9 @@ const Profile = () => {
           method: serviceUrls.profile.getProfileByUserId.method,
         });
 
-        if (response.data.messageType === "S") {
-          setPosts(response.data.responseData.userPosts);
-        } else {
-          snackbar({
-            show: true,
-            messageType: "error",
-            message: response.data.message,
-          });
-        }
+        setPosts(response.data.responseData.posts);
       } catch (error: any) {
+        navigate(-1);
         snackbar({
           show: true,
           messageType: "error",

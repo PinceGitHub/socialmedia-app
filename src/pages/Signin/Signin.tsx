@@ -61,40 +61,32 @@ const Signin = () => {
         data: { email, password },
       });
 
-      if (response.data.messageType === "S") {
-        setAuth({
-          userId: response.data.responseData.id,
-          email,
-          firstName: response.data.responseData.firstName,
-          lastName: response.data.responseData.lastName,
-          profilePicture: response.data.responseData.profilePicture,
-          accessToken: response.data.responseData.accessToken,
-        });
+      setAuth({
+        userId: response.data.responseData.id,
+        email,
+        firstName: response.data.responseData.firstName,
+        lastName: response.data.responseData.lastName,
+        profilePicture: response.data.responseData.profilePicture,
+        accessToken: response.data.responseData.accessToken,
+      });
 
-        setPersist(rememberMe);
-        localStorage.setItem("persist", String(rememberMe));
+      setPersist(rememberMe);
+      localStorage.setItem("persist", String(rememberMe));
 
-        setFetchTokenResp({
-          fetched: true,
-          isSuccessful: true,
-          isFailure: false,
-        });
+      setFetchTokenResp({
+        fetched: true,
+        isSuccessful: true,
+        isFailure: false,
+      });
 
-        navigate(from, { replace: true });
-      } else {
-        setFetchTokenResp({
-          fetched: true,
-          isSuccessful: false,
-          isFailure: true,
-        });
-
-        snackbar({
-          show: true,
-          messageType: "error",
-          message: response.data.message,
-        });
-      }
+      navigate(from, { replace: true });
     } catch (error: any) {
+      setFetchTokenResp({
+        fetched: true,
+        isSuccessful: false,
+        isFailure: true,
+      });
+
       snackbar({
         show: true,
         messageType: "error",

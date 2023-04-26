@@ -28,22 +28,18 @@ const useRefreshToken = () => {
         method: serviceUrls.auth.refreshToken.method,
       });
 
-      if (response.data.messageType === "S") {
-        retVal.isSuccess = true;
-        retVal.isError = false;
-        retVal.data = {
-          userId: response.data.responseData.id,
-          email: response.data.responseData.email,
-          firstName: response.data.responseData.firstName,
-          lastName: response.data.responseData.lastName,
-          profilePicture: response.data.responseData.profilePicture,
-          accessToken: response.data.responseData.accessToken,
-        };
-      } else {
-        retVal.error = new Error(response.data.message);
-      }
+      retVal.isSuccess = true;
+      retVal.isError = false;
+      retVal.data = {
+        userId: response.data.responseData.id,
+        email: response.data.responseData.email,
+        firstName: response.data.responseData.firstName,
+        lastName: response.data.responseData.lastName,
+        profilePicture: response.data.responseData.profilePicture,
+        accessToken: response.data.responseData.accessToken,
+      };
     } catch (error: any) {
-      retVal.error = error;
+      retVal.error = error.response?.data?.message || error.message;
     }
 
     return retVal;

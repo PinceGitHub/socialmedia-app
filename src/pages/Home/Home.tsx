@@ -26,15 +26,7 @@ const Home = () => {
           method: serviceUrls.posts.getTimeline.method,
         });
 
-        if (response.data.messageType === "S") {
-          setPosts(response.data.responseData.posts);
-        } else {
-          snackbar({
-            show: true,
-            messageType: "error",
-            message: response.data.message,
-          });
-        }
+        setPosts(response.data.responseData.posts);
       } catch (error: any) {
         snackbar({
           show: true,

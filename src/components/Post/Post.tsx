@@ -26,7 +26,7 @@ export type PostPropsType = {
   user: string;
   firstName: string;
   lastName: string;
-  profilePicture: string;
+  profilePicture?: string;
   description: string;
   image: string;
   likes: Array<string>;
@@ -75,20 +75,12 @@ const Post = (props: PostPropsType) => {
 
       showLoader(true);
 
-      const response = await axios({
+      await axios({
         url: `${serviceUrls.posts.like.path}${props._id}`,
         method: serviceUrls.posts.like.method,
       });
 
-      if (response.data.messageType === "S") {
-        onLikeSuccess();
-      } else {
-        snackbar({
-          show: true,
-          messageType: "error",
-          message: response.data.message,
-        });
-      }
+      onLikeSuccess();
     } catch (error: any) {
       snackbar({
         show: true,
@@ -113,7 +105,7 @@ const Post = (props: PostPropsType) => {
         <Top>
           <TopLeft>
             <Profile
-              src={props.profilePicture}
+              src={props.profilePicture || ""}
               sx={{ cursor: "pointer" }}
               onClick={handleClickUserProfile}
             />
