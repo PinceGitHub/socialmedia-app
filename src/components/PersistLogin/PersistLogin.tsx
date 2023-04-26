@@ -41,7 +41,7 @@ const PersistLogin = ({ children }: PersistLoginProps) => {
         snackbar({
           show: true,
           messageType: "error",
-          message: response.error.message,
+          message: response.error,
         });
       }
     };

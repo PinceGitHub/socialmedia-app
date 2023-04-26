@@ -8,6 +8,7 @@ import useLoader from "../../hooks/useLoader";
 import useSnackbar from "../../hooks/useSnackbar";
 import { PostPropsType } from "../../components/Post/Post";
 import { serviceUrls } from "../../utils/app-utils";
+import { FollowingType } from "../../components/Following/Following";
 
 const Home = () => {
   const axios = useAxiosPrivate();
@@ -15,6 +16,9 @@ const Home = () => {
   const snackbar = useSnackbar();
 
   const [posts, setPosts] = useState<Array<PostPropsType> | null>(null);
+  const [followings, setFollowings] = useState<Array<FollowingType> | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchTimeline = async () => {
@@ -27,6 +31,7 @@ const Home = () => {
         });
 
         setPosts(response.data.responseData.posts);
+        setFollowings(response.data.responseData.followings);
       } catch (error: any) {
         snackbar({
           show: true,
@@ -46,7 +51,7 @@ const Home = () => {
   return (
     <Container>
       <Feed posts={posts} />
-      <Rightbar />
+      {followings && <Rightbar profile={false} followings={followings} />}
     </Container>
   );
 };

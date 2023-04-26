@@ -1,8 +1,8 @@
 export const appUrls = {
-  signIn: "signin",
-  signUp: "signup",
+  signIn: "/signin",
+  signUp: "/signup",
   home: "/",
-  profile: "profile/:id",
+  profile: "/profile/:id",
 };
 
 export const serviceUrls = {

@@ -6,18 +6,34 @@ import {
 } from "./Following.style";
 import { Typography, Avatar } from "@mui/material";
 
-const sampleFollowings = [
-  { userId: "1", fullName: "Manisha Kumari", profilePic: "" },
-  { userId: "2", fullName: "Krushna Jena", profilePic: "" },
-];
+import { useNavigate } from "react-router-dom";
+import { appUrls } from "../../utils/app-utils";
 
-type FriendsPropsType = {
-  userId: string;
+type FollowingPropsType = {
+  followings: Array<FollowingType>;
+};
+
+export type FollowingType = {
+  user: string;
+  firstName: string;
+  lastName: string;
+  profilePic?: string;
+};
+
+type FriendPropsType = {
+  user: string;
   fullName: string;
   profilePic: string;
 };
 
-const Friends = ({ userId, fullName, profilePic }: FriendsPropsType) => {
+const Friend = ({ user, fullName, profilePic }: FriendPropsType) => {
+  const navigate = useNavigate();
+
+  const handleOnClickUser = () => {
+    const url = appUrls.profile.replace(":id", user);
+    navigate(url);
+  };
+
   return (
     <FollowingListItem>
       <OnlineBadge
@@ -25,27 +41,32 @@ const Friends = ({ userId, fullName, profilePic }: FriendsPropsType) => {
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         variant="dot"
       >
-        <Avatar alt={fullName} src="" sx={{ mr: "10px" }} />
+        <Avatar
+          alt={fullName}
+          src={profilePic}
+          sx={{ mr: "10px", cursor: "pointer" }}
+          onClick={handleOnClickUser}
+        />
       </OnlineBadge>
       <Typography>{fullName}</Typography>
     </FollowingListItem>
   );
 };
 
-const Following = () => {
+const Following = ({ followings }: FollowingPropsType) => {
   return (
     <Container>
       <Typography variant="h4" fontSize="15px" fontWeight="500">
         Followings
       </Typography>
       <FollowingList>
-        {sampleFollowings.map((f) => {
+        {followings.map((f) => {
           return (
-            <Friends
-              key={f.userId}
-              userId={f.userId}
-              fullName={f.fullName}
-              profilePic={f.profilePic}
+            <Friend
+              key={f.user}
+              user={f.user}
+              fullName={`${f.firstName} ${f.lastName}`}
+              profilePic={f.profilePic || ""}
             />
           );
         })}

@@ -20,6 +20,20 @@ import useSnackbar from "../../hooks/useSnackbar";
 import { useState, useEffect } from "react";
 import { PostPropsType } from "../../components/Post/Post";
 import { serviceUrls } from "../../utils/app-utils";
+import { FollowingType } from "../../components/Following/Following";
+
+type UserInfoType = {
+  coverPicture?: string;
+  profilePicture?: string;
+  firstName: string;
+  lastName: string;
+  description?: string;
+  city?: string;
+  from?: string;
+  relationship?: number;
+  followers?: Array<{}>;
+  followings?: Array<FollowingType>;
+};
 
 const Profile = () => {
   const { id } = useParams();
@@ -30,6 +44,7 @@ const Profile = () => {
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [posts, setPosts] = useState<Array<PostPropsType> | null>(null);
+  const [userInfo, setUserInfo] = useState<UserInfoType | null>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -42,6 +57,7 @@ const Profile = () => {
         });
 
         setPosts(response.data.responseData.posts);
+        setUserInfo(response.data.responseData);
       } catch (error: any) {
         navigate(-1);
         snackbar({
@@ -57,33 +73,43 @@ const Profile = () => {
     fetchPosts();
 
     //eslint-disable-next-line
-  }, []);
+  }, [id]);
 
   return (
     <>
-      <Container>
-        <Top>
-          <CoverPicture src={noImage} />
-          <ProfilePicture />
-        </Top>
-        <ProfileInfo>
-          <Typography mb={1} fontWeight="500">
-            Prince Sharma
-          </Typography>
-          <Typography mb={1}>Description for Prince</Typography>
-          <Button
-            variant="outlined"
-            startIcon={<Edit />}
-            onClick={() => setOpenEditDialog(true)}
-          >
-            Edit Profile
-          </Button>
-        </ProfileInfo>
-        <Bottom>
-          <Feed userId={id} posts={posts} />
-          <Rightbar />
-        </Bottom>
-      </Container>
+      {userInfo && (
+        <Container>
+          <Top>
+            <CoverPicture src={userInfo.coverPicture || noImage} />
+            <ProfilePicture />
+          </Top>
+          <ProfileInfo>
+            <Typography mb={1} fontWeight="500">
+              {`${userInfo.firstName} ${userInfo.lastName}`}
+            </Typography>
+            <Typography mb={1}>{userInfo.description || ""}</Typography>
+            <Button
+              variant="outlined"
+              startIcon={<Edit />}
+              onClick={() => setOpenEditDialog(true)}
+            >
+              Edit Profile
+            </Button>
+          </ProfileInfo>
+          <Bottom>
+            <Feed userId={id} posts={posts} />
+            <Rightbar
+              profile={true}
+              userInfo={{
+                city: userInfo.city,
+                from: userInfo.from,
+                relationship: userInfo.relationship,
+              }}
+              followings={userInfo.followings}
+            />
+          </Bottom>
+        </Container>
+      )}
       {openEditDialog && (
         <EditProfile
           openEditDialog={openEditDialog}

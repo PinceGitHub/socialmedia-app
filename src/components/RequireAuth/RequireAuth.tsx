@@ -1,6 +1,5 @@
 import useAuth from "../../hooks/useAuth";
 import Signin from "../../pages/Signin/Signin";
-import Loader from "../Loader/Loader";
 
 type RequireAuthProps = {
   children: React.ReactNode;
@@ -17,10 +16,8 @@ const RequireAuth = ({ children }: RequireAuthProps) => {
         ) : (
           <Signin />
         )
-      ) : persist ? (
-        <Loader open={true} />
       ) : (
-        <Signin />
+        !persist && <Signin />
       )}
     </>
   );
