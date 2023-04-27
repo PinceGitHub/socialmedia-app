@@ -12,7 +12,9 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
+
 import { appUrls } from "../../utils/app-utils";
+import { Link } from "react-router-dom";
 
 const settings = ["Profile", "Logout"];
 
@@ -31,19 +33,19 @@ const Topbar = () => {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Wrapper>
-            <Typography
-              variant="h6"
-              noWrap
-              component="a"
-              href={appUrls.home}
-              sx={{
-                mr: 2,
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              socialmedia
-            </Typography>
+            <Link to={appUrls.home} style={{ textDecoration: "none" }}>
+              <Typography
+                variant="h6"
+                noWrap
+                sx={{
+                  mr: 2,
+                  color: "white",
+                  textDecoration: "none",
+                }}
+              >
+                socialmedia
+              </Typography>
+            </Link>
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open options">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

@@ -59,7 +59,7 @@ const Profile = () => {
         setPosts(response.data.responseData.posts);
         setUserInfo(response.data.responseData);
       } catch (error: any) {
-        navigate(-1);
+        navigate("/notfound", { replace: true });
         snackbar({
           show: true,
           messageType: "error",

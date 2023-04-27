@@ -1,5 +1,6 @@
+import { Navigate, useLocation } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
-import Signin from "../../pages/Signin/Signin";
+import { appUrls } from "../../utils/app-utils";
 
 type RequireAuthProps = {
   children: React.ReactNode;
@@ -7,6 +8,7 @@ type RequireAuthProps = {
 
 const RequireAuth = ({ children }: RequireAuthProps) => {
   const { fetchTokenResp, persist } = useAuth();
+  const { pathname } = useLocation();
 
   return (
     <>
@@ -14,10 +16,12 @@ const RequireAuth = ({ children }: RequireAuthProps) => {
         fetchTokenResp.isSuccessful ? (
           children
         ) : (
-          <Signin />
+          <Navigate to={appUrls.signIn} state={{ from: { pathname } }} />
         )
       ) : (
-        !persist && <Signin />
+        !persist && (
+          <Navigate to={appUrls.signIn} state={{ from: { pathname } }} />
+        )
       )}
     </>
   );

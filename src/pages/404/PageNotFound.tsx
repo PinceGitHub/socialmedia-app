@@ -24,6 +24,7 @@ const PageNotFound = () => {
       <Link
         style={{ textDecoration: "none", color: "white" }}
         to={appUrls.home}
+        replace
       >
         To return home, please click here
       </Link>
