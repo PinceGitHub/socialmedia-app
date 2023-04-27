@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthProvider";
 import { LoaderProvider } from "./contexts/LoaderProvider";
 import { SnackbarProvider } from "./contexts/SnackbarProvider";
+import PersistLogin from "./components/PersistLogin/PersistLogin";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -14,7 +15,14 @@ root.render(
       <LoaderProvider>
         <SnackbarProvider>
           <Routes>
-            <Route path="/*" element={<App />} />
+            <Route
+              path="/*"
+              element={
+                <PersistLogin>
+                  <App />
+                </PersistLogin>
+              }
+            />
           </Routes>
         </SnackbarProvider>
       </LoaderProvider>

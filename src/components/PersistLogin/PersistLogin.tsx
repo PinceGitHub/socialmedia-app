@@ -46,9 +46,22 @@ const PersistLogin = ({ children }: PersistLoginProps) => {
       }
     };
 
-    if (!auth?.accessToken && persist) {
+    if (auth?.accessToken) {
+      setFetchTokenResp({
+        fetched: true,
+        isSuccessful: true,
+        isFailure: false,
+      });
+    } else if (persist) {
       verifyRefreshToken();
+    } else {
+      setFetchTokenResp({
+        fetched: true,
+        isSuccessful: false,
+        isFailure: false,
+      });
     }
+
     //eslint-disable-next-line
   }, []);
 

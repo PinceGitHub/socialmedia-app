@@ -6,7 +6,7 @@ import Home from "./pages/Home/Home";
 import Profile from "./pages/Profile/Profile";
 import PageNotFound from "./pages/404/PageNotFound";
 import { appUrls } from "./utils/app-utils";
-import PersistLogin from "./components/PersistLogin/PersistLogin";
+import NoAuth from "./components/NoAuth/NoAuth";
 import RequireAuth from "./components/RequireAuth/RequireAuth";
 
 function App() {
@@ -14,17 +14,29 @@ function App() {
     <Routes>
       <Route path="/">
         {/* public routes */}
-        <Route path={appUrls.signIn} element={<Signin />} />
-        <Route path={appUrls.signUp} element={<Signup />} />
+        <Route
+          path={appUrls.signIn}
+          element={
+            <NoAuth>
+              <Signin />
+            </NoAuth>
+          }
+        />
+        <Route
+          path={appUrls.signUp}
+          element={
+            <NoAuth>
+              <Signup />
+            </NoAuth>
+          }
+        />
 
         {/* protected routes */}
         <Route
           element={
-            <PersistLogin>
-              <RequireAuth>
-                <Layout />
-              </RequireAuth>
-            </PersistLogin>
+            <RequireAuth>
+              <Layout />
+            </RequireAuth>
           }
         >
           <Route index element={<Home />} />

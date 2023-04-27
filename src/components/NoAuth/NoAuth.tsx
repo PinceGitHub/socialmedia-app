@@ -1,23 +1,22 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { appUrls } from "../../utils/app-utils";
 import Loader from "../Loader/Loader";
 
-type RequireAuthProps = {
+type NoAuthProps = {
   children: React.ReactNode;
 };
 
-const RequireAuth = ({ children }: RequireAuthProps) => {
+const NoAuth = ({ children }: NoAuthProps) => {
   const { fetchTokenResp } = useAuth();
-  const { pathname } = useLocation();
 
   return (
     <>
       {fetchTokenResp.fetched ? (
         fetchTokenResp.isSuccessful ? (
-          children
+          <Navigate to={appUrls.home} replace />
         ) : (
-          <Navigate to={appUrls.signIn} state={{ from: { pathname } }} />
+          children
         )
       ) : (
         <Loader open={true} />
@@ -26,4 +25,4 @@ const RequireAuth = ({ children }: RequireAuthProps) => {
   );
 };
 
-export default RequireAuth;
+export default NoAuth;
