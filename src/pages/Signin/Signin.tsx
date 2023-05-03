@@ -76,7 +76,6 @@ const Signin = () => {
       setFetchTokenResp({
         fetched: true,
         isSuccessful: true,
-        isFailure: false,
       });
 
       navigate(from, { replace: true });
@@ -84,7 +83,6 @@ const Signin = () => {
       setFetchTokenResp({
         fetched: true,
         isSuccessful: false,
-        isFailure: true,
       });
 
       snackbar({

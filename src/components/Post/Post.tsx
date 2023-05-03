@@ -12,14 +12,15 @@ import {
   Bottom,
 } from "./Post.style";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import useSnackbar from "../../hooks/useSnackbar";
 import { appUrls, serviceUrls } from "../../utils/app-utils";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import moment from "moment";
 import useLoader from "../../hooks/useLoader";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import usePics from "../../hooks/usePics";
 
 export type PostPropsType = {
   _id: string;
@@ -39,8 +40,18 @@ const Post = (props: PostPropsType) => {
   const axios = useAxiosPrivate();
   const showLoader = useLoader();
   const snackbar = useSnackbar();
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { pics } = usePics();
+
+  const [profilePic, setProfilePic] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (props.profilePicture && pics.has(`${props.user}_profile`)) {
+      const imageUrl = pics.get(`${props.user}_profile`);
+      setProfilePic(imageUrl as string);
+    }
+
+    //eslint-disable-next-line
+  }, [pics]);
 
   const [likes, setLikes] = useState({
     count: props.likes.length,
@@ -92,23 +103,17 @@ const Post = (props: PostPropsType) => {
     }
   };
 
-  const handleClickUserProfile = () => {
-    if (id && id === props.user) return;
-
-    const url = appUrls.profile.replace(":id", props.user);
-    navigate(url);
-  };
-
   return (
     <Container>
       <Wrapper>
         <Top>
           <TopLeft>
-            <Profile
-              src={props.profilePicture || ""}
-              sx={{ cursor: "pointer" }}
-              onClick={handleClickUserProfile}
-            />
+            <Link
+              to={appUrls.profile.replace(":id", props.user)}
+              style={{ textDecoration: "none" }}
+            >
+              <Profile src={profilePic || ""} />
+            </Link>
             <Typography>{`${props.firstName} ${props.lastName}`}</Typography>
           </TopLeft>
           <TopRight>

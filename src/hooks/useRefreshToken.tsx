@@ -3,7 +3,6 @@ import { axiosPrivate } from "../utils/axios-utils";
 
 type UseRefreshTokenType = {
   isSuccess: boolean;
-  isError: boolean;
   data?: {
     userId: string;
     email: string;
@@ -18,7 +17,6 @@ type UseRefreshTokenType = {
 const useRefreshToken = () => {
   const refresh = async (): Promise<UseRefreshTokenType> => {
     const retVal: UseRefreshTokenType = {
-      isError: true,
       isSuccess: false,
     };
 
@@ -29,7 +27,6 @@ const useRefreshToken = () => {
       });
 
       retVal.isSuccess = true;
-      retVal.isError = false;
       retVal.data = {
         userId: response.data.responseData.id,
         email: response.data.responseData.email,
@@ -39,7 +36,7 @@ const useRefreshToken = () => {
         accessToken: response.data.responseData.accessToken,
       };
     } catch (error: any) {
-      retVal.error = error.response?.data?.message || error.message;
+      retVal.error = error;
     }
 
     return retVal;

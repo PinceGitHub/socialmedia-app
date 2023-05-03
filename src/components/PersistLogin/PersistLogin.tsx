@@ -29,19 +29,17 @@ const PersistLogin = ({ children }: PersistLoginProps) => {
         setFetchTokenResp({
           fetched: true,
           isSuccessful: true,
-          isFailure: false,
         });
       } else {
         setFetchTokenResp({
           fetched: true,
           isSuccessful: false,
-          isFailure: true,
         });
 
         snackbar({
           show: true,
           messageType: "error",
-          message: response.error,
+          message: response.error.message,
         });
       }
     };
@@ -50,7 +48,6 @@ const PersistLogin = ({ children }: PersistLoginProps) => {
       setFetchTokenResp({
         fetched: true,
         isSuccessful: true,
-        isFailure: false,
       });
     } else if (persist) {
       verifyRefreshToken();
@@ -58,7 +55,6 @@ const PersistLogin = ({ children }: PersistLoginProps) => {
       setFetchTokenResp({
         fetched: true,
         isSuccessful: false,
-        isFailure: false,
       });
     }
 

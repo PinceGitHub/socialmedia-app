@@ -6,8 +6,10 @@ import {
 } from "./Following.style";
 import { Typography, Avatar } from "@mui/material";
 
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { appUrls } from "../../utils/app-utils";
+import { useEffect, useState } from "react";
+import usePics from "../../hooks/usePics";
 
 type FollowingPropsType = {
   followings: Array<FollowingType>;
@@ -17,22 +19,27 @@ export type FollowingType = {
   user: string;
   firstName: string;
   lastName: string;
-  profilePic?: string;
+  profilePicture?: string;
 };
 
 type FriendPropsType = {
   user: string;
   fullName: string;
-  profilePic: string;
+  profilePicName?: string;
 };
 
-const Friend = ({ user, fullName, profilePic }: FriendPropsType) => {
-  const navigate = useNavigate();
+const Friend = ({ user, fullName, profilePicName }: FriendPropsType) => {
+  const [profilePic, setProfilePic] = useState<string | null>(null);
+  const { pics } = usePics();
 
-  const handleOnClickUser = () => {
-    const url = appUrls.profile.replace(":id", user);
-    navigate(url);
-  };
+  useEffect(() => {
+    if (profilePicName && pics.has(`${user}_profile`)) {
+      const imageUrl = pics.get(`${user}_profile`);
+      setProfilePic(imageUrl as string);
+    }
+
+    //eslint-disable-next-line
+  }, [pics]);
 
   return (
     <FollowingListItem>
@@ -41,12 +48,12 @@ const Friend = ({ user, fullName, profilePic }: FriendPropsType) => {
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         variant="dot"
       >
-        <Avatar
-          alt={fullName}
-          src={profilePic}
-          sx={{ mr: "10px", cursor: "pointer" }}
-          onClick={handleOnClickUser}
-        />
+        <Link
+          to={appUrls.profile.replace(":id", user)}
+          style={{ textDecoration: "none" }}
+        >
+          <Avatar alt={fullName} src={profilePic || ""} sx={{ mr: "10px" }} />
+        </Link>
       </OnlineBadge>
       <Typography>{fullName}</Typography>
     </FollowingListItem>
@@ -66,7 +73,7 @@ const Following = ({ followings }: FollowingPropsType) => {
               key={f.user}
               user={f.user}
               fullName={`${f.firstName} ${f.lastName}`}
-              profilePic={f.profilePic || ""}
+              profilePicName={f.profilePicture}
             />
           );
         })}

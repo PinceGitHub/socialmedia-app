@@ -9,21 +9,10 @@ type AuthUser = {
   accessToken: string;
 };
 
-type FetchedTokenResponseType = {
-  fetched: true;
-  isSuccessful?: boolean;
-  isFailure?: boolean;
+type FetchTokenResponseType = {
+  fetched: boolean;
+  isSuccessful: boolean;
 };
-
-type FetchingTokenResponseType = {
-  fetched: false;
-  isSuccessful?: never;
-  isFailure?: never;
-};
-
-type FetchTokenResponseType =
-  | FetchingTokenResponseType
-  | FetchedTokenResponseType;
 
 type AuthProviderProps = {
   children: React.ReactNode;
@@ -52,6 +41,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [persist, setPersist] = useState(isPersistentLogin);
   const [fetchTokenResp, setFetchTokenResp] = useState<FetchTokenResponseType>({
     fetched: false,
+    isSuccessful: false,
   });
 
   return (

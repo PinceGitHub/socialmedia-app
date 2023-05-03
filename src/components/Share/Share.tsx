@@ -11,9 +11,25 @@ import {
   ShareImgCancel,
 } from "./Share.style";
 import { TextField, InputAdornment, Button } from "@mui/material";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
+import useAuth from "../../hooks/useAuth";
+import usePics from "../../hooks/usePics";
 
 const Share = () => {
+  const [profilePic, setProfilePic] = useState<string | null>(null);
+  const { auth } = useAuth();
+  const { pics } = usePics();
+
+  useEffect(() => {
+    const user = auth?.userId;
+
+    if (user && pics.has(`${user}_profile`)) {
+      const imageUrl = pics.get(`${user}_profile`);
+      setProfilePic(imageUrl as string);
+    }
+  }, [auth, pics]);
+
   const [file, setFile] = useState<null | undefined | File>(null);
 
   return (
@@ -24,7 +40,10 @@ const Share = () => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Profile alt="Remy Sharp" src="" />
+                <Profile
+                  alt={`${auth?.firstName} ${auth?.lastName}`}
+                  src={profilePic || ""}
+                />
               </InputAdornment>
             ),
           }}
