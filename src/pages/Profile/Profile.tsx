@@ -49,21 +49,66 @@ const Profile = () => {
   const { pics } = usePics();
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [posts, setPosts] = useState<Array<PostPropsType> | null>(null);
-  const [userInfo, setUserInfo] = useState<UserInfoType | null>(null);
+
+  const [profilePic, setProfilePic] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    if (pics.has(`${id}_profile`)) {
+      const imageUrl = pics.get(`${id}_profile`);
+      setProfilePic(imageUrl as string);
+    }
+  }, [id, pics]);
+
+  const [posts, setPosts] = useState<Array<PostPropsType> | null>(null);
+  const [userInfo, setUserInfo] = useState<UserInfoType | null>(null);
+  const [coverPic, setCoverPic] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
       try {
         showLoader(true);
 
+        //Obtain user information and posts.
         const response = await axios({
           url: `${serviceUrls.profile.getProfileByUserId.path}${id}`,
           method: serviceUrls.profile.getProfileByUserId.method,
         });
 
-        setPosts(response.data.responseData.posts);
-        setUserInfo(response.data.responseData);
+        const postsResp: Array<PostPropsType> =
+          response.data.responseData.posts;
+        const userInfoResp: UserInfoType = response.data.responseData;
+
+        //Fetch the user's cover picture
+        let coverPicURL = null;
+        if (id && userInfoResp.coverPicture) {
+          coverPicURL = (await getPic(id, "cover", userInfoResp.coverPicture))
+            .imgUrl;
+        }
+
+        //Feth the user's and the user's followings' profile pictures
+        const uniqueUsers = new Map<string, string>();
+
+        postsResp?.forEach((post) => {
+          if (post.profilePicture && !uniqueUsers.has(post.user)) {
+            uniqueUsers.set(post.user, post.profilePicture);
+          }
+        });
+
+        userInfoResp?.followings?.forEach((following) => {
+          if (following.profilePicture && !uniqueUsers.has(following.user)) {
+            uniqueUsers.set(following.user, following.profilePicture);
+          }
+        });
+
+        Promise.allSettled(
+          Array.from(uniqueUsers).map((val) => {
+            return getPic(val[0], "profile", val[1]);
+          })
+        );
+
+        setPosts(postsResp);
+        setUserInfo(userInfoResp);
+        setCoverPic(coverPicURL);
       } catch (error: any) {
         navigate("/notfound", { replace: true });
         snackbar({
@@ -76,71 +121,10 @@ const Profile = () => {
       }
     };
 
-    const resetState = () => {
-      setPosts(null);
-      setUserInfo(null);
-    };
-
-    fetchPosts();
-
-    return resetState();
+    fetchData();
 
     //eslint-disable-next-line
   }, [id]);
-
-  useEffect(() => {
-    const fetchProfilePics = () => {
-      const uniqueUsers = new Map<string, string>();
-
-      posts?.forEach((post) => {
-        if (post.profilePicture && !uniqueUsers.has(post.user)) {
-          uniqueUsers.set(post.user, post.profilePicture);
-        }
-      });
-
-      userInfo?.followings?.forEach((following) => {
-        if (following.profilePicture && !uniqueUsers.has(following.user)) {
-          uniqueUsers.set(following.user, following.profilePicture);
-        }
-      });
-
-      Promise.allSettled(
-        Array.from(uniqueUsers).map((val) => {
-          return getPic(val[0], "profile", val[1]);
-        })
-      );
-    };
-
-    if (posts && userInfo?.followings) {
-      fetchProfilePics();
-    }
-
-    //eslint-disable-next-line
-  }, [posts, userInfo?.followings]);
-
-  const [coverPic, setCoverPic] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchCoverPic = async (user: string, imgName: string) => {
-      const resp = await getPic(user, "cover", imgName);
-      setCoverPic(resp.imgUrl);
-    };
-
-    if (id && userInfo?.coverPicture) {
-      fetchCoverPic(id, userInfo.coverPicture);
-    }
-
-    //eslint-disable-next-line
-  }, [id, userInfo?.coverPicture]);
-
-  const [profilePic, setProfilePic] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (pics.has(`${id}_profile`)) {
-      const imageUrl = pics.get(`${id}_profile`);
-      setProfilePic(imageUrl as string);
-    }
-  }, [id, pics]);
 
   return (
     <>
