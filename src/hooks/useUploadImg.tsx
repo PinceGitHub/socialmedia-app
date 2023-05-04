@@ -1,25 +1,38 @@
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import storage from "../utils/firebase-utils";
+import moment from "moment";
 
 type useUploadImgType = {
   isSuccess: boolean;
+  imgName: string;
   imgUrl: string;
   error?: any;
 };
 
 const useUploadImg = () => {
-  const upload = async (isCoverPic: boolean, imgFile: File) => {
-    const folderLocation = isCoverPic ? "/cover-pics" : "/profile-pics";
-    const storageRef = ref(storage, `${folderLocation}/${imgFile.name}`);
+  const upload = async (
+    user: string,
+    imgType: "cover" | "profile" | "post",
+    imgFile: File
+  ) => {
+    const folderLocation = `/${imgType}-pics`;
+    const fileName = `${user}_${moment().format("yyyyMMDDHHmmss")}_${
+      imgFile.name
+    }`;
+    const storageRef = ref(storage, `${folderLocation}/${fileName}`);
     const retVal: useUploadImgType = {
       isSuccess: false,
+      imgName: "",
       imgUrl: "",
     };
 
     try {
-      const uploadTask = await uploadBytesResumable(storageRef, imgFile);
-      retVal.imgUrl = await getDownloadURL(uploadTask.ref);
+      const renamedFile = new File([imgFile], fileName, { type: imgFile.type });
+      const uploadTask = await uploadBytes(storageRef, renamedFile);
+
       retVal.isSuccess = true;
+      retVal.imgName = fileName;
+      retVal.imgUrl = await getDownloadURL(uploadTask.ref);
     } catch (error: any) {
       retVal.error = error;
     }

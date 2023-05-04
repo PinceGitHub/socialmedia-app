@@ -62,69 +62,78 @@ const Profile = () => {
   const [posts, setPosts] = useState<Array<PostPropsType> | null>(null);
   const [userInfo, setUserInfo] = useState<UserInfoType | null>(null);
   const [coverPic, setCoverPic] = useState<string | null>(null);
+  const [refetch, setRefetch] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      showLoader(true);
+
+      //Obtain user information and posts.
+      const response = await axios({
+        url: `${serviceUrls.profile.getProfileByUserId.path}${id}`,
+        method: serviceUrls.profile.getProfileByUserId.method,
+      });
+
+      const postsResp: Array<PostPropsType> = response.data.responseData.posts;
+      const userInfoResp: UserInfoType = response.data.responseData;
+
+      //Fetch the user's cover picture
+      let coverPicURL = null;
+      if (id && userInfoResp.coverPicture) {
+        coverPicURL = (await getPic(id, "cover", userInfoResp.coverPicture))
+          .imgUrl;
+      }
+
+      //Feth the user's and the user's followings' profile pictures
+      const uniqueUsers = new Map<string, string>();
+
+      postsResp?.forEach((post) => {
+        if (post.profilePicture && !uniqueUsers.has(post.user)) {
+          uniqueUsers.set(post.user, post.profilePicture);
+        }
+      });
+
+      userInfoResp?.followings?.forEach((following) => {
+        if (following.profilePicture && !uniqueUsers.has(following.user)) {
+          uniqueUsers.set(following.user, following.profilePicture);
+        }
+      });
+
+      Promise.allSettled(
+        Array.from(uniqueUsers).map((val) => {
+          return getPic(val[0], "profile", val[1]);
+        })
+      );
+
+      setPosts(postsResp);
+      setUserInfo(userInfoResp);
+      setCoverPic(coverPicURL);
+    } catch (error: any) {
+      navigate("/notfound", { replace: true });
+      snackbar({
+        show: true,
+        messageType: "error",
+        message: error.response?.data?.message || error.message,
+      });
+    } finally {
+      showLoader(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        showLoader(true);
-
-        //Obtain user information and posts.
-        const response = await axios({
-          url: `${serviceUrls.profile.getProfileByUserId.path}${id}`,
-          method: serviceUrls.profile.getProfileByUserId.method,
-        });
-
-        const postsResp: Array<PostPropsType> =
-          response.data.responseData.posts;
-        const userInfoResp: UserInfoType = response.data.responseData;
-
-        //Fetch the user's cover picture
-        let coverPicURL = null;
-        if (id && userInfoResp.coverPicture) {
-          coverPicURL = (await getPic(id, "cover", userInfoResp.coverPicture))
-            .imgUrl;
-        }
-
-        //Feth the user's and the user's followings' profile pictures
-        const uniqueUsers = new Map<string, string>();
-
-        postsResp?.forEach((post) => {
-          if (post.profilePicture && !uniqueUsers.has(post.user)) {
-            uniqueUsers.set(post.user, post.profilePicture);
-          }
-        });
-
-        userInfoResp?.followings?.forEach((following) => {
-          if (following.profilePicture && !uniqueUsers.has(following.user)) {
-            uniqueUsers.set(following.user, following.profilePicture);
-          }
-        });
-
-        Promise.allSettled(
-          Array.from(uniqueUsers).map((val) => {
-            return getPic(val[0], "profile", val[1]);
-          })
-        );
-
-        setPosts(postsResp);
-        setUserInfo(userInfoResp);
-        setCoverPic(coverPicURL);
-      } catch (error: any) {
-        navigate("/notfound", { replace: true });
-        snackbar({
-          show: true,
-          messageType: "error",
-          message: error.response?.data?.message || error.message,
-        });
-      } finally {
-        showLoader(false);
-      }
-    };
-
     fetchData();
 
     //eslint-disable-next-line
   }, [id]);
+
+  useEffect(() => {
+    if (refetch) {
+      fetchData();
+      setRefetch(false);
+    }
+
+    //eslint-disable-next-line
+  }, [refetch]);
 
   return (
     <>
@@ -148,7 +157,7 @@ const Profile = () => {
             </Button>
           </ProfileInfo>
           <Bottom>
-            <Feed userId={id} posts={posts} />
+            <Feed userId={id} posts={posts} setRefetch={setRefetch} />
             <Rightbar
               profile={true}
               userInfo={{

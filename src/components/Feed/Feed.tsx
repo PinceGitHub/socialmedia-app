@@ -7,15 +7,18 @@ import useAuth from "../../hooks/useAuth";
 type FeedPropsType = {
   userId?: string;
   posts: Array<PostPropsType> | null;
+  setRefetch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Feed = ({ userId, posts }: FeedPropsType) => {
+const Feed = ({ userId, posts, setRefetch }: FeedPropsType) => {
   const { auth } = useAuth();
 
   return (
     <Container>
       <Wrapper>
-        {(!userId || userId === auth?.userId) && <Share />}
+        {(!userId || userId === auth?.userId) && (
+          <Share setRefetch={setRefetch} />
+        )}
         {posts &&
           posts
             .sort((a, b) => {

@@ -39,6 +39,10 @@ export const serviceUrls = {
       path: "/post/timeline",
       method: "POST",
     },
+    create: {
+      path: "/post/create",
+      method: "POST",
+    },
     like: {
       path: "/post/like/",
       method: "PUT",

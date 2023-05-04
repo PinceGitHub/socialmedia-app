@@ -21,65 +21,74 @@ const Home = () => {
   const [followings, setFollowings] = useState<Array<FollowingType> | null>(
     null
   );
+  const [refetch, setRefetch] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      showLoader(true);
+
+      //Obtain user timeline and followings
+      const response = await axios({
+        url: serviceUrls.posts.getTimeline.path,
+        method: serviceUrls.posts.getTimeline.method,
+      });
+
+      const postsResp: Array<PostPropsType> = response.data.responseData.posts;
+      const followingsResp: Array<FollowingType> =
+        response.data.responseData.followings;
+
+      //Feth the user's and the user's followings' profile pictures
+      const uniqueUsers = new Map<string, string>();
+
+      postsResp?.forEach((post) => {
+        if (post.profilePicture && !uniqueUsers.has(post.user)) {
+          uniqueUsers.set(post.user, post.profilePicture);
+        }
+      });
+
+      followingsResp?.forEach((following) => {
+        if (following.profilePicture && !uniqueUsers.has(following.user)) {
+          uniqueUsers.set(following.user, following.profilePicture);
+        }
+      });
+
+      Promise.allSettled(
+        Array.from(uniqueUsers).map((val) => {
+          return getPic(val[0], "profile", val[1]);
+        })
+      );
+
+      setPosts(postsResp);
+      setFollowings(followingsResp);
+    } catch (error: any) {
+      snackbar({
+        show: true,
+        messageType: "error",
+        message: error.response?.data?.message || error.message,
+      });
+    } finally {
+      showLoader(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        showLoader(true);
-
-        //Obtain user timeline and followings
-        const response = await axios({
-          url: serviceUrls.posts.getTimeline.path,
-          method: serviceUrls.posts.getTimeline.method,
-        });
-
-        const postsResp: Array<PostPropsType> =
-          response.data.responseData.posts;
-        const followingsResp: Array<FollowingType> =
-          response.data.responseData.followings;
-
-        //Feth the user's and the user's followings' profile pictures
-        const uniqueUsers = new Map<string, string>();
-
-        postsResp?.forEach((post) => {
-          if (post.profilePicture && !uniqueUsers.has(post.user)) {
-            uniqueUsers.set(post.user, post.profilePicture);
-          }
-        });
-
-        followingsResp?.forEach((following) => {
-          if (following.profilePicture && !uniqueUsers.has(following.user)) {
-            uniqueUsers.set(following.user, following.profilePicture);
-          }
-        });
-
-        Promise.allSettled(
-          Array.from(uniqueUsers).map((val) => {
-            return getPic(val[0], "profile", val[1]);
-          })
-        );
-
-        setPosts(postsResp);
-        setFollowings(followingsResp);
-      } catch (error: any) {
-        snackbar({
-          show: true,
-          messageType: "error",
-          message: error.response?.data?.message || error.message,
-        });
-      } finally {
-        showLoader(false);
-      }
-    };
-
     fetchData();
 
     //eslint-disable-next-line
   }, []);
 
+  useEffect(() => {
+    if (refetch) {
+      fetchData();
+      setRefetch(false);
+    }
+
+    //eslint-disable-next-line
+  }, [refetch]);
+
   return (
     <Container>
-      <Feed posts={posts} />
+      <Feed posts={posts} setRefetch={setRefetch} />
       {followings && <Rightbar profile={false} followings={followings} />}
     </Container>
   );
