@@ -43,18 +43,18 @@ const Friend = ({ user, fullName, profilePicName }: FriendPropsType) => {
 
   return (
     <FollowingListItem>
-      <OnlineBadge
+      {/* <OnlineBadge
         overlap="circular"
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         variant="dot"
+      > */}
+      <Link
+        to={appUrls.profile.replace(":id", user)}
+        style={{ textDecoration: "none" }}
       >
-        <Link
-          to={appUrls.profile.replace(":id", user)}
-          style={{ textDecoration: "none" }}
-        >
-          <Avatar alt={fullName} src={profilePic || ""} sx={{ mr: "10px" }} />
-        </Link>
-      </OnlineBadge>
+        <Avatar alt={fullName} src={profilePic || ""} sx={{ mr: "10px" }} />
+      </Link>
+      {/* </OnlineBadge> */}
       <Typography>{fullName}</Typography>
     </FollowingListItem>
   );

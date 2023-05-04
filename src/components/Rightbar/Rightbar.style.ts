@@ -7,12 +7,12 @@ export const Container = styled(Stack)(() => ({
 
 export const Wrapper = styled(Stack)(({ theme }) => ({
   [theme.breakpoints.up("xs")]: {
-    padding: "10px",
+    padding: "0 10px 10px 10px",
   },
   [theme.breakpoints.up("sm")]: {
-    padding: "15px",
+    padding: "0 15px 15px 15px",
   },
   [theme.breakpoints.up("md")]: {
-    padding: "25px",
+    padding: "0 25px 25px 25px",
   },
 }));

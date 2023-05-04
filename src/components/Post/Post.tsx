@@ -21,6 +21,7 @@ import moment from "moment";
 import useLoader from "../../hooks/useLoader";
 import { Link } from "react-router-dom";
 import usePics from "../../hooks/usePics";
+import useDownloadImg from "../../hooks/useDownloadImg";
 
 export type PostPropsType = {
   _id: string;
@@ -41,6 +42,22 @@ const Post = (props: PostPropsType) => {
   const showLoader = useLoader();
   const snackbar = useSnackbar();
   const { pics } = usePics();
+  const getPic = useDownloadImg();
+
+  const [postImg, setPostImg] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPostImg = async () => {
+      const resp = await getPic(props.user, "post", props.image);
+      setPostImg(resp.imgUrl);
+    };
+
+    if (props.image !== "") {
+      fetchPostImg();
+    }
+
+    //eslint-disable-next-line
+  }, []);
 
   const [profilePic, setProfilePic] = useState<string | null>(null);
 
@@ -125,7 +142,7 @@ const Post = (props: PostPropsType) => {
         </Top>
         <Center>
           <Typography>{props.description}</Typography>
-          <PostImage src={props.image} />
+          <PostImage src={postImg || ""} />
         </Center>
         <Bottom>
           <ThumbUpAlt
