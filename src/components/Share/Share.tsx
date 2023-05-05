@@ -36,11 +36,14 @@ const Share = ({ setRefetch }: SharePropsType) => {
   const [profilePic, setProfilePic] = useState<string | null>(null);
 
   useEffect(() => {
-    const user = auth?.userId;
+    const authUser = auth?.userId;
+    const authUserProfilePic = auth?.profilePicture;
 
-    if (user && pics.has(`${user}_profile`)) {
-      const imageUrl = pics.get(`${user}_profile`);
-      setProfilePic(imageUrl as string);
+    if (authUser && authUserProfilePic && authUserProfilePic.trim() !== "") {
+      const profilePicUrl = pics.get(
+        `${authUser}_profile_${authUserProfilePic}`
+      );
+      profilePicUrl && setProfilePic(profilePicUrl);
     }
   }, [auth, pics]);
 
@@ -49,10 +52,9 @@ const Share = ({ setRefetch }: SharePropsType) => {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       const uploadedFile = e.target.files?.[0];
+      const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
 
       if (uploadedFile) {
-        const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
-
         if (allowedExtensions.exec(uploadedFile.name)) {
           setFile(uploadedFile);
         } else {
@@ -161,7 +163,7 @@ const Share = ({ setRefetch }: SharePropsType) => {
           fullWidth
           autoFocus
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(e) => setDescription(e.target.value.replace(/"/g, "'"))}
           error={descError.error}
           helperText={descError.helperText}
         />

@@ -1,10 +1,25 @@
 import { styled } from "@mui/material/styles";
-import { Autocomplete, Stack, TextField } from "@mui/material";
+import { Autocomplete, Box, Stack, TextField } from "@mui/material";
+import { Cancel } from "@mui/icons-material";
 
 export const Container = styled(Stack)(() => ({
   width: "100%",
   flexDirection: "column",
   margin: "normal",
+}));
+
+export const Center = styled(Box)(() => ({
+  position: "relative",
+  marginTop: "10px",
+}));
+
+export const ImgCancel = styled(Cancel)(() => ({
+  position: "absolute",
+  top: "-15px",
+  right: "-10px",
+  cursor: "pointer",
+  opacity: "0.7",
+  color: "red",
 }));
 
 export const ProfileSection = styled(Stack)(() => ({
@@ -67,4 +82,16 @@ export const InfoCombo = styled(Autocomplete)(({ theme }) => ({
   [theme.breakpoints.up("md")]: {
     width: "320px",
   },
+}));
+
+export const UploadOption = styled("label")(() => ({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  cursor: "pointer",
+  fontWeight: "500",
+  padding: "5px",
+  border: "1px solid #1976d2",
+  borderRadius: "5px",
 }));

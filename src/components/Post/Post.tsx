@@ -44,31 +44,30 @@ const Post = (props: PostPropsType) => {
   const { pics } = usePics();
   const getPic = useDownloadImg();
 
+  const [profilePic, setProfilePic] = useState<string | null>(null);
   const [postImg, setPostImg] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchPostImg = async () => {
-      const resp = await getPic(props.user, "post", props.image);
-      setPostImg(resp.imgUrl);
-    };
-
-    if (props.image !== "") {
-      fetchPostImg();
-    }
+    props.image !== "" && getPic(props.user, "post", props.image);
 
     //eslint-disable-next-line
   }, []);
 
-  const [profilePic, setProfilePic] = useState<string | null>(null);
-
   useEffect(() => {
-    if (props.profilePicture && pics.has(`${props.user}_profile`)) {
-      const imageUrl = pics.get(`${props.user}_profile`);
-      setProfilePic(imageUrl as string);
+    //putting a profile photo in
+    if (props.profilePicture && props.profilePicture.trim() !== "") {
+      const profilePicUrl = pics.get(
+        `${props.user}_profile_${props.profilePicture}`
+      );
+      profilePicUrl && setProfilePic(profilePicUrl);
     }
 
-    //eslint-disable-next-line
-  }, [pics]);
+    //allocating the post's image
+    if (props.image && props.image.trim() !== "") {
+      const postImgUrl = pics.get(`${props.user}_post_${props.image}`);
+      postImgUrl && setPostImg(postImgUrl);
+    }
+  }, [props.profilePicture, props.image, props.user, pics]);
 
   const [likes, setLikes] = useState({
     count: props.likes.length,

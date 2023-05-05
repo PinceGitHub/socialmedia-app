@@ -41,13 +41,21 @@ const Home = () => {
       const uniqueUsers = new Map<string, string>();
 
       postsResp?.forEach((post) => {
-        if (post.profilePicture && !uniqueUsers.has(post.user)) {
+        if (
+          post.profilePicture &&
+          post.profilePicture.trim() !== "" &&
+          !uniqueUsers.has(post.user)
+        ) {
           uniqueUsers.set(post.user, post.profilePicture);
         }
       });
 
       followingsResp?.forEach((following) => {
-        if (following.profilePicture && !uniqueUsers.has(following.user)) {
+        if (
+          following.profilePicture &&
+          following.profilePicture.trim() !== "" &&
+          !uniqueUsers.has(following.user)
+        ) {
           uniqueUsers.set(following.user, following.profilePicture);
         }
       });

@@ -43,8 +43,6 @@ const Signin = () => {
       ...prev,
       rememberMe: persist,
     }));
-
-    //eslint-disable-next-line
   }, [persist]);
 
   const handleSigninFormSubmit = async (

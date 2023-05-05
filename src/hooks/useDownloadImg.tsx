@@ -9,39 +9,44 @@ type useDownloadImgType = {
 };
 
 const useDownloadImg = () => {
-  const { setPics } = usePics();
+  const { pics, setPics } = usePics();
 
   const getImgUrl = async (
     user: string,
     imgType: "cover" | "profile" | "post",
     imgName: string
   ) => {
-    const key = `${user}_${imgType}`;
+    const key = `${user}_${imgType}_${imgName}`;
     const retVal: useDownloadImgType = {
       isSuccess: false,
       imgUrl: "",
     };
 
-    const folderLocation = `/${imgType}-pics`;
-    const storageRef = ref(storage, `${folderLocation}/${imgName}`);
-
     try {
-      retVal.imgUrl = await getDownloadURL(storageRef);
-      retVal.isSuccess = true;
+      if (pics.has(key)) {
+        retVal.isSuccess = true;
+        retVal.imgUrl = pics.get(key) as string;
+      } else {
+        const folderLocation = `/${imgType}-pics`;
+        const storageRef = ref(storage, `${folderLocation}/${imgName}`);
 
-      setPics((prevPics) => {
-        const newPics: Map<string, string> = new Map(
-          JSON.parse(JSON.stringify(Array.from(prevPics)))
-        );
+        retVal.imgUrl = await getDownloadURL(storageRef);
+        retVal.isSuccess = true;
 
-        if (newPics.has(key)) {
-          newPics.delete(key);
-        }
+        setPics((prevPics) => {
+          const newPics: Map<string, string> = new Map(
+            JSON.parse(JSON.stringify(Array.from(prevPics)))
+          );
 
-        newPics.set(key, retVal.imgUrl);
+          if (newPics.has(key)) {
+            newPics.delete(key);
+          }
 
-        return newPics;
-      });
+          newPics.set(key, retVal.imgUrl);
+
+          return newPics;
+        });
+      }
     } catch (error: any) {
       retVal.error = error;
     }

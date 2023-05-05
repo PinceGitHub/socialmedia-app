@@ -50,18 +50,8 @@ const Profile = () => {
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
 
-  const [profilePic, setProfilePic] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (pics.has(`${id}_profile`)) {
-      const imageUrl = pics.get(`${id}_profile`);
-      setProfilePic(imageUrl as string);
-    }
-  }, [id, pics]);
-
   const [posts, setPosts] = useState<Array<PostPropsType> | null>(null);
   const [userInfo, setUserInfo] = useState<UserInfoType | null>(null);
-  const [coverPic, setCoverPic] = useState<string | null>(null);
   const [refetch, setRefetch] = useState(false);
 
   const fetchData = async () => {
@@ -78,23 +68,41 @@ const Profile = () => {
       const userInfoResp: UserInfoType = response.data.responseData;
 
       //Fetch the user's cover picture
-      let coverPicURL = null;
-      if (id && userInfoResp.coverPicture) {
-        coverPicURL = (await getPic(id, "cover", userInfoResp.coverPicture))
-          .imgUrl;
+      if (
+        id &&
+        userInfoResp.coverPicture &&
+        userInfoResp.coverPicture.trim() !== ""
+      ) {
+        getPic(id, "cover", userInfoResp.coverPicture);
       }
 
       //Feth the user's and the user's followings' profile pictures
       const uniqueUsers = new Map<string, string>();
 
+      if (
+        id &&
+        userInfoResp.profilePicture &&
+        userInfoResp.profilePicture.trim() !== ""
+      ) {
+        uniqueUsers.set(id, userInfoResp.profilePicture);
+      }
+
       postsResp?.forEach((post) => {
-        if (post.profilePicture && !uniqueUsers.has(post.user)) {
+        if (
+          post.profilePicture &&
+          post.profilePicture.trim() !== "" &&
+          !uniqueUsers.has(post.user)
+        ) {
           uniqueUsers.set(post.user, post.profilePicture);
         }
       });
 
       userInfoResp?.followings?.forEach((following) => {
-        if (following.profilePicture && !uniqueUsers.has(following.user)) {
+        if (
+          following.profilePicture &&
+          following.profilePicture.trim() !== "" &&
+          !uniqueUsers.has(following.user)
+        ) {
           uniqueUsers.set(following.user, following.profilePicture);
         }
       });
@@ -107,7 +115,6 @@ const Profile = () => {
 
       setPosts(postsResp);
       setUserInfo(userInfoResp);
-      setCoverPic(coverPicURL);
     } catch (error: any) {
       navigate("/notfound", { replace: true });
       snackbar({
@@ -125,6 +132,25 @@ const Profile = () => {
 
     //eslint-disable-next-line
   }, [id]);
+
+  const [coverPic, setCoverPic] = useState<string | null>(null);
+  const [profilePic, setProfilePic] = useState<string | null>(null);
+
+  useEffect(() => {
+    //allocating the cover photo
+    if (userInfo?.coverPicture && userInfo?.coverPicture !== "") {
+      const coverPicUrl = pics.get(`${id}_cover_${userInfo.coverPicture}`);
+      coverPicUrl && setCoverPic(coverPicUrl);
+    }
+
+    //putting a profile photo in
+    if (userInfo?.profilePicture && userInfo.profilePicture.trim() !== "") {
+      const profilePicUrl = pics.get(
+        `${id}_profile_${userInfo.profilePicture}`
+      );
+      profilePicUrl && setProfilePic(profilePicUrl);
+    }
+  }, [id, userInfo?.coverPicture, userInfo?.profilePicture, pics]);
 
   useEffect(() => {
     if (refetch) {
@@ -174,6 +200,12 @@ const Profile = () => {
         <EditProfile
           openEditDialog={openEditDialog}
           setOpenEditDialog={setOpenEditDialog}
+          coverPicture={coverPic}
+          profilePicture={profilePic}
+          description={userInfo?.description}
+          city={userInfo?.city}
+          from={userInfo?.from}
+          relationship={userInfo?.relationship}
         />
       )}
     </>

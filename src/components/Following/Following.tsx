@@ -33,13 +33,11 @@ const Friend = ({ user, fullName, profilePicName }: FriendPropsType) => {
   const { pics } = usePics();
 
   useEffect(() => {
-    if (profilePicName && pics.has(`${user}_profile`)) {
-      const imageUrl = pics.get(`${user}_profile`);
-      setProfilePic(imageUrl as string);
+    if (profilePicName && profilePicName.trim() !== "") {
+      const profilePicUrl = pics.get(`${user}_profile_${profilePicName}`);
+      profilePicUrl && setProfilePic(profilePicUrl);
     }
-
-    //eslint-disable-next-line
-  }, [pics]);
+  }, [user, profilePicName, pics]);
 
   return (
     <FollowingListItem>
