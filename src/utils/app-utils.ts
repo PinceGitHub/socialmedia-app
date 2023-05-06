@@ -33,6 +33,10 @@ export const serviceUrls = {
       path: "/profile/",
       method: "GET",
     },
+    upsertProfile: {
+      path: "/profile/upsert",
+      method: "POST",
+    },
   },
   posts: {
     getTimeline: {

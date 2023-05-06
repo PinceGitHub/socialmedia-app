@@ -200,12 +200,16 @@ const Profile = () => {
         <EditProfile
           openEditDialog={openEditDialog}
           setOpenEditDialog={setOpenEditDialog}
+          setRefetch={setRefetch}
+          user={id as string}
           coverPicture={coverPic}
           profilePicture={profilePic}
           description={userInfo?.description}
           city={userInfo?.city}
           from={userInfo?.from}
           relationship={userInfo?.relationship}
+          profilePicName={userInfo?.profilePicture || ""}
+          coverPicName={userInfo?.coverPicture || ""}
         />
       )}
     </>

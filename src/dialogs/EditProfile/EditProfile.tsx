@@ -25,16 +25,26 @@ import ChangePassword from "../ChangePassword/ChangePassword";
 
 import { useState } from "react";
 import useSnackbar from "../../hooks/useSnackbar";
+import useLoader from "../../hooks/useLoader";
+import useDeleteImg from "../../hooks/useDeleteImg";
+import useUploadImg from "../../hooks/useUploadImg";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { serviceUrls } from "../../utils/app-utils";
+import useAuth from "../../hooks/useAuth";
 
 type EditProfilePropsType = {
   openEditDialog: boolean;
   setOpenEditDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  setRefetch: React.Dispatch<React.SetStateAction<boolean>>;
+  user: string;
   profilePicture: string | null;
   coverPicture: string | null;
   description?: string;
   city?: string;
   from?: string;
   relationship?: number;
+  profilePicName: string;
+  coverPicName: string;
 };
 
 const relationshipOptions = [
@@ -46,9 +56,15 @@ const relationshipOptions = [
 
 const EditProfile = (props: EditProfilePropsType) => {
   const snackbar = useSnackbar();
+  const showLoader = useLoader();
+  const deletePic = useDeleteImg();
+  const uploadPic = useUploadImg();
+  const axios = useAxiosPrivate();
+  const { auth, setAuth } = useAuth();
 
   const [openChangePwdDialog, setOpenChangePwdDialog] = useState(false);
   const [profile, setProfile] = useState({
+    user: props.user,
     profilePicture: props.profilePicture || "",
     coverPicture: props.coverPicture || "",
     description: props.description || "",
@@ -93,16 +109,122 @@ const EditProfile = (props: EditProfilePropsType) => {
     }
   };
 
-  const handleUpdateProfile = () => {
+  const handleUpdateProfile = async () => {
+    const payload: any = {};
+
     try {
+      showLoader(true);
+
+      let errorCount = 0;
+
+      //If you have a changed profile photo, upload it.
       if (profilePicFile) {
+        const resp = await uploadPic(profile.user, "profile", profilePicFile);
+
+        if (resp.isSuccess) {
+          payload.profilePicture = resp.imgName;
+        } else {
+          errorCount += 1;
+          snackbar({
+            show: true,
+            messageType: "error",
+            message: resp.error.message,
+          });
+        }
+      }
+
+      //if you have a changed cover photo, upload it.
+      if (errorCount === 0 && coverPicFile) {
+        const resp = await uploadPic(profile.user, "cover", coverPicFile);
+
+        if (resp.isSuccess) {
+          payload.coverPicture = resp.imgName;
+        } else {
+          errorCount += 1;
+          snackbar({
+            show: true,
+            messageType: "error",
+            message: resp.error.message,
+          });
+        }
+      }
+
+      if (errorCount === 0) {
+        if (props.description !== profile.description.trim()) {
+          payload.description = profile.description.trim().replace(/"/g, "'");
+        }
+
+        if (props.city !== profile.city.trim()) {
+          payload.city = profile.city.trim().replace(/"/g, "'");
+        }
+
+        if (props.from !== profile.from.trim()) {
+          payload.from = profile.from.trim().replace(/"/g, "'");
+        }
+
+        if (props.relationship !== profile.relationship) {
+          payload.relationship = profile.relationship;
+        }
+      }
+
+      if (Object.keys(payload).length) {
+        await axios({
+          url: serviceUrls.profile.upsertProfile.path,
+          method: serviceUrls.profile.upsertProfile.method,
+          data: payload,
+        });
+
+        const deletePrevPicsArr = [];
+
+        if (payload.profilePicture && props.profilePicName !== "") {
+          deletePrevPicsArr.push({
+            user: props.user,
+            imgType: "profile",
+            imgName: props.profilePicName,
+          });
+
+          if (auth) {
+            setAuth({
+              userId: auth.userId,
+              email: auth.email,
+              firstName: auth.firstName,
+              lastName: auth.lastName,
+              profilePicture: payload.profilePicture,
+              accessToken: auth.accessToken,
+            });
+          }
+        }
+
+        if (payload.coverPicture && props.coverPicName !== "") {
+          deletePrevPicsArr.push({
+            user: props.user,
+            imgType: "cover",
+            imgName: props.coverPicName,
+          });
+        }
+
+        deletePrevPicsArr.length &&
+          (await Promise.allSettled(
+            deletePrevPicsArr.map((p) => {
+              return deletePic(
+                p.user,
+                p.imgType === "profile" ? "profile" : "cover",
+                p.imgName
+              );
+            })
+          ));
+
+        props.setOpenEditDialog(false);
+        props.setRefetch(true);
       }
     } catch (error: any) {
       snackbar({
         show: true,
         messageType: "error",
-        message: error.message,
+        message: error.response?.data?.message || error.message,
       });
+    } finally {
+      showLoader(false);
     }
   };
 
@@ -192,7 +314,7 @@ const EditProfile = (props: EditProfilePropsType) => {
                 onChange={(e) =>
                   setProfile((prev) => ({
                     ...prev,
-                    description: e.target.value.replace(/"/g, "'"),
+                    description: e.target.value,
                   }))
                 }
                 id="description"
@@ -205,7 +327,7 @@ const EditProfile = (props: EditProfilePropsType) => {
                 onChange={(e) =>
                   setProfile((prev) => ({
                     ...prev,
-                    city: e.target.value.replace(/"/g, "'"),
+                    city: e.target.value,
                   }))
                 }
                 id="city"
@@ -218,7 +340,7 @@ const EditProfile = (props: EditProfilePropsType) => {
                 onChange={(e) =>
                   setProfile((prev) => ({
                     ...prev,
-                    from: e.target.value.replace(/"/g, "'"),
+                    from: e.target.value,
                   }))
                 }
                 id="from"
@@ -229,13 +351,19 @@ const EditProfile = (props: EditProfilePropsType) => {
               <InfoCombo
                 defaultValue={
                   relationshipOptions.filter(
-                    (op) => op.id === String(profile.relationship)
+                    (op) => op.id === String(profile.relationship || -1)
                   )[0]
                 }
                 disablePortal
                 disableClearable
                 id="relationshipStatus"
                 options={relationshipOptions}
+                onChange={(e, v: any) =>
+                  setProfile((prev) => ({
+                    ...prev,
+                    relationship: Number(v.id),
+                  }))
+                }
                 renderInput={(params) => (
                   <TextField {...params} label="Relationship Status" />
                 )}
@@ -251,7 +379,9 @@ const EditProfile = (props: EditProfilePropsType) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => props.setOpenEditDialog(false)}>Cancel</Button>
-          <Button type="button">Update</Button>
+          <Button type="button" onClick={handleUpdateProfile}>
+            Update
+          </Button>
         </DialogActions>
       </Dialog>
       {openChangePwdDialog && (

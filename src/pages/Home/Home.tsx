@@ -97,7 +97,9 @@ const Home = () => {
   return (
     <Container>
       <Feed posts={posts} setRefetch={setRefetch} />
-      {followings && <Rightbar profile={false} followings={followings} />}
+      {followings && followings.length > 0 && (
+        <Rightbar profile={false} followings={followings} />
+      )}
     </Container>
   );
 };
