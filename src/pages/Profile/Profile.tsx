@@ -1,7 +1,7 @@
 import Feed from "../../components/Feed/Feed";
 import Rightbar from "../../components/Rightbar/Rightbar";
 import { Typography, Button } from "@mui/material";
-import { Edit } from "@mui/icons-material";
+import { Edit, FollowTheSigns } from "@mui/icons-material";
 import {
   Bottom,
   Container,
@@ -52,6 +52,7 @@ const Profile = () => {
 
   const [posts, setPosts] = useState<Array<PostPropsType> | null>(null);
   const [userInfo, setUserInfo] = useState<UserInfoType | null>(null);
+  const [followed, setFollowed] = useState(false);
   const [refetch, setRefetch] = useState(false);
 
   const fetchData = async () => {
@@ -115,6 +116,15 @@ const Profile = () => {
 
       setPosts(postsResp);
       setUserInfo(userInfoResp);
+
+      if (
+        auth &&
+        userInfoResp.followers?.find(
+          (follower: any) => follower.user === auth.userId
+        )
+      ) {
+        setFollowed(true);
+      }
     } catch (error: any) {
       navigate("/notfound", { replace: true });
       snackbar({
@@ -161,6 +171,42 @@ const Profile = () => {
     //eslint-disable-next-line
   }, [refetch]);
 
+  const handleFollowUnfollowUser = async () => {
+    try {
+      showLoader(true);
+
+      if (followed) {
+        await axios({
+          url: `${serviceUrls.profile.unfollow.path}${id}`,
+          method: serviceUrls.profile.unfollow.method,
+        });
+
+        const newUserInfo: UserInfoType = JSON.parse(JSON.stringify(userInfo));
+        newUserInfo.followers = userInfo?.followers?.filter(
+          (follower: any) => follower.user !== auth?.userId
+        );
+
+        setUserInfo(newUserInfo);
+        setFollowed(false);
+      } else {
+        await axios({
+          url: `${serviceUrls.profile.follow.path}${id}`,
+          method: serviceUrls.profile.follow.method,
+        });
+
+        setRefetch(true);
+      }
+    } catch (error: any) {
+      snackbar({
+        show: true,
+        messageType: "error",
+        message: error.response?.data?.message || error.message,
+      });
+    } finally {
+      showLoader(false);
+    }
+  };
+
   return (
     <>
       {userInfo && (
@@ -174,13 +220,23 @@ const Profile = () => {
               {`${userInfo.firstName} ${userInfo.lastName}`}
             </Typography>
             <Typography mb={1}>{userInfo.description || ""}</Typography>
-            <Button
-              variant="outlined"
-              startIcon={<Edit />}
-              onClick={() => setOpenEditDialog(true)}
-            >
-              Edit Profile
-            </Button>
+            {auth && auth.userId === id ? (
+              <Button
+                variant="outlined"
+                startIcon={<Edit />}
+                onClick={() => setOpenEditDialog(true)}
+              >
+                Edit Profile
+              </Button>
+            ) : (
+              <Button
+                variant="outlined"
+                startIcon={<FollowTheSigns />}
+                onClick={handleFollowUnfollowUser}
+              >
+                {followed ? "Unfollow" : "Follow"}
+              </Button>
+            )}
           </ProfileInfo>
           <Bottom>
             <Feed userId={id} posts={posts} setRefetch={setRefetch} />

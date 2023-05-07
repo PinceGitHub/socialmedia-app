@@ -37,6 +37,14 @@ export const serviceUrls = {
       path: "/profile/upsert",
       method: "POST",
     },
+    follow: {
+      path: "/profile/follow/",
+      method: "PUT",
+    },
+    unfollow: {
+      path: "/profile/unfollow/",
+      method: "PUT",
+    },
   },
   posts: {
     getTimeline: {
