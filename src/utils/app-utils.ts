@@ -1,6 +1,6 @@
 export const appUrls = {
-  signIn: "/signin",
   signUp: "/signup",
+  signIn: "/signin",
   home: "/",
   profile: "/profile/:id",
 };
@@ -54,6 +54,10 @@ export const serviceUrls = {
     create: {
       path: "/post/create",
       method: "POST",
+    },
+    delete: {
+      path: "/post/delete/",
+      method: "DELETE",
     },
     like: {
       path: "/post/like/",

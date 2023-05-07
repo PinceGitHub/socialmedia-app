@@ -41,6 +41,7 @@ const Feed = ({ userId, posts, setRefetch }: FeedPropsType) => {
                   likes={post.likes}
                   createdAt={post.createdAt}
                   updatedAt={post.updatedAt}
+                  setRefetch={setRefetch}
                 />
               );
             })}

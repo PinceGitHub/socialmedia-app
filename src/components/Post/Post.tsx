@@ -34,6 +34,7 @@ export type PostPropsType = {
   likes: Array<string>;
   createdAt: string;
   updatedAt: string;
+  setRefetch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const Post = (props: PostPropsType) => {
@@ -119,6 +120,27 @@ const Post = (props: PostPropsType) => {
     }
   };
 
+  const handleDeletePost = async () => {
+    try {
+      showLoader(true);
+
+      await axios({
+        url: `${serviceUrls.posts.delete.path}${props._id}`,
+        method: serviceUrls.posts.delete.method,
+      });
+
+      props.setRefetch(true);
+    } catch (error: any) {
+      snackbar({
+        show: true,
+        messageType: "error",
+        message: error.response?.data?.message || error.message,
+      });
+    } finally {
+      showLoader(false);
+    }
+  };
+
   return (
     <Container>
       <Wrapper>
@@ -136,7 +158,12 @@ const Post = (props: PostPropsType) => {
             <Typography mr={1} fontSize="12px">
               {moment(new Date(props.createdAt)).fromNow()}
             </Typography>
-            <Delete sx={{ color: "red", fontSize: "15px" }} />
+            {auth && auth.userId === props.user && (
+              <Delete
+                sx={{ color: "red", fontSize: "15px", cursor: "pointer" }}
+                onClick={handleDeletePost}
+              />
+            )}
           </TopRight>
         </Top>
         <Center>
