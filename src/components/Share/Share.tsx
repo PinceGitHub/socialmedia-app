@@ -107,7 +107,7 @@ const Share = ({ setRefetch }: SharePropsType) => {
             await axios({
               url: serviceUrls.posts.create.path,
               method: serviceUrls.posts.create.method,
-              data: { description, image },
+              data: { description: description.trim(), image },
             });
 
             setDescription("");
@@ -163,7 +163,7 @@ const Share = ({ setRefetch }: SharePropsType) => {
           fullWidth
           autoFocus
           value={description}
-          onChange={(e) => setDescription(e.target.value.replace(/"/g, "'"))}
+          onChange={(e) => setDescription(e.target.value)}
           error={descError.error}
           helperText={descError.helperText}
         />

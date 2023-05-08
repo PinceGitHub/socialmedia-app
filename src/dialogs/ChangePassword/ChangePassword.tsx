@@ -69,8 +69,8 @@ const ChangePassword = ({
           url: serviceUrls.auth.changePassword.path,
           method: serviceUrls.auth.changePassword.method,
           data: {
-            oldPassword: state.oldPassword,
-            newPassword: state.newPassword,
+            oldPassword: state.oldPassword.trim(),
+            newPassword: state.newPassword.trim(),
           },
         });
 
@@ -109,6 +109,7 @@ const ChangePassword = ({
           component="form"
           margin="normal"
           width="100%"
+          autoComplete="on"
           onSubmit={(e) => handleFormSubmit(e)}
         >
           <FormText
@@ -122,7 +123,6 @@ const ChangePassword = ({
             variant="outlined"
             required
             autoFocus
-            autoComplete="password"
             inputProps={{ minLength: 6, maxLength: 20 }}
             sx={{ mt: "8px" }}
           />

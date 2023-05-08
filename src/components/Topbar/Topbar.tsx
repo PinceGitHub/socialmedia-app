@@ -36,7 +36,7 @@ const Topbar = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
-    if (auth) {
+    if (auth && auth.profilePicture !== "") {
       const key = `${auth.userId}_profile_${auth.profilePicture}`;
 
       if (pics.has(key)) {

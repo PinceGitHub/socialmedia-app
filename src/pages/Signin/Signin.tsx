@@ -56,7 +56,7 @@ const Signin = () => {
       const response = await axiosPrivate({
         url: serviceUrls.auth.login.path,
         method: serviceUrls.auth.login.method,
-        data: { email, password },
+        data: { email: email.trim(), password: password.trim() },
       });
 
       setAuth({
@@ -171,7 +171,7 @@ const Signin = () => {
               marginBottom: "16px",
               textAlign: "center",
             }}
-            to={`/${appUrls.signUp}`}
+            to={appUrls.signUp}
           >
             SIGN UP
           </Link>
