@@ -1,6 +1,7 @@
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import storage from "../utils/firebase-utils";
 import moment from "moment";
+import usePics from "./usePics";
 
 type useUploadImgType = {
   isSuccess: boolean;
@@ -10,6 +11,8 @@ type useUploadImgType = {
 };
 
 const useUploadImg = () => {
+  const { setPics } = usePics();
+
   const upload = async (
     user: string,
     imgType: "cover" | "profile" | "post",
@@ -33,6 +36,20 @@ const useUploadImg = () => {
       retVal.isSuccess = true;
       retVal.imgName = fileName;
       retVal.imgUrl = await getDownloadURL(uploadTask.ref);
+
+      const key = `${user}_${imgType}_${fileName}`;
+
+      setPics((prevPics) => {
+        const newPics: Map<string, string> = new Map(
+          JSON.parse(JSON.stringify(Array.from(prevPics)))
+        );
+
+        if (!newPics.has(key)) {
+          newPics.set(key, retVal.imgUrl);
+        }
+
+        return newPics;
+      });
     } catch (error: any) {
       retVal.error = error;
     }

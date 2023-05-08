@@ -176,7 +176,7 @@ const Share = ({ setRefetch }: SharePropsType) => {
         <Bottom>
           <ShareOption htmlFor="file">
             <MediaIcon />
-            <ShareText>Photo or Video</ShareText>
+            <ShareText>Photo</ShareText>
             <input
               type="file"
               style={{ display: "none" }}

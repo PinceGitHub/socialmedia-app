@@ -54,7 +54,7 @@ export const PostImage = styled("img")(() => ({
   marginTop: "16px",
   width: "100%",
   maxHeight: "500px",
-  objectFit: "cover",
+  objectFit: "contain",
 }));
 
 export const Bottom = styled(Stack)(() => ({

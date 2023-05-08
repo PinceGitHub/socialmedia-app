@@ -176,12 +176,13 @@ const EditProfile = (props: EditProfilePropsType) => {
 
         const deletePrevPicsArr = [];
 
-        if (payload.profilePicture && props.profilePicName !== "") {
-          deletePrevPicsArr.push({
-            user: props.user,
-            imgType: "profile",
-            imgName: props.profilePicName,
-          });
+        if (payload.profilePicture) {
+          props.profilePicName !== "" &&
+            deletePrevPicsArr.push({
+              user: props.user,
+              imgType: "profile",
+              imgName: props.profilePicName,
+            });
 
           if (auth) {
             setAuth({

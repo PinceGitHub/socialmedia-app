@@ -3,6 +3,18 @@ import { Stack } from "@mui/material";
 
 export const Container = styled(Stack)(() => ({
   flex: 3,
+  overflowY: "auto",
+  height: "calc(100vh - 90px)",
+  "&::-webkit-scrollbar": {
+    width: "2px",
+    height: "2px",
+  },
+  "&::-webkit-scrollbar-track": {
+    background: "rgba(0, 0, 0, 0.1)",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
 }));
 
 export const Wrapper = styled(Stack)(({ theme }) => ({

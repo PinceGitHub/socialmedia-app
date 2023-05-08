@@ -5,6 +5,7 @@ export const Container = styled(Stack)(() => ({
   flex: 9,
   overflowY: "auto",
   height: "calc(100vh - 90px)",
+  paddingTop: "5px",
   "&::-webkit-scrollbar": {
     width: "2px",
     height: "2px",
