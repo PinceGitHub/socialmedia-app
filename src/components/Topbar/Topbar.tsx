@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Wrapper } from "./Topbar.style";
 import {
   AppBar,
@@ -13,20 +12,73 @@ import {
   MenuItem,
 } from "@mui/material";
 
-import { appUrls } from "../../utils/app-utils";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import useAuth from "../../hooks/useAuth";
+import { appUrls, serviceUrls } from "../../utils/app-utils";
+import { Link, useNavigate } from "react-router-dom";
+import useDownloadImg from "../../hooks/useDownloadImg";
+import usePics from "../../hooks/usePics";
+import useLoader from "../../hooks/useLoader";
+import useSnackbar from "../../hooks/useSnackbar";
+import { axiosPrivate } from "../../utils/axios-utils";
 
 const settings = ["Profile", "Logout"];
 
 const Topbar = () => {
+  const { auth, setAuth, setFetchTokenResp } = useAuth();
+  const navigate = useNavigate();
+  const { pics } = usePics();
+  const getPic = useDownloadImg();
+  const showLoader = useLoader();
+  const snackbar = useSnackbar();
+
+  const [profilePic, setProfilePic] = useState("");
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
+  useEffect(() => {
+    if (auth) {
+      const key = `${auth.userId}_profile_${auth.profilePicture}`;
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+      if (pics.has(key)) {
+        setProfilePic(pics.get(key) as string);
+      } else {
+        getPic(auth.userId, "profile", auth.profilePicture);
+      }
+    }
+
+    //eslint-disable-next-line
+  }, [auth, pics]);
+
+  const handleSelectMenuItem = async (
+    e: React.MouseEvent<HTMLLIElement, MouseEvent>
+  ) => {
+    const selectedOption = e.currentTarget.innerText;
+
+    if (selectedOption.toLowerCase() === "profile") {
+      setAnchorElUser(null);
+      auth && navigate(appUrls.profile.replace(":id", auth.userId));
+    } else {
+      try {
+        showLoader(true);
+
+        await axiosPrivate({
+          url: serviceUrls.auth.logout.path,
+          method: serviceUrls.auth.logout.method,
+        });
+
+        setAuth(null);
+        setFetchTokenResp({ fetched: true, isSuccessful: false });
+        navigate(appUrls.signIn);
+      } catch (error: any) {
+        snackbar({
+          show: true,
+          messageType: "error",
+          message: error.response?.data?.message || error.message,
+        });
+      } finally {
+        showLoader(false);
+      }
+    }
   };
   return (
     <AppBar position="sticky">
@@ -48,8 +100,11 @@ const Topbar = () => {
             </Link>
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open options">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="" />
+                <IconButton
+                  onClick={(e) => setAnchorElUser(e.currentTarget)}
+                  sx={{ p: 0 }}
+                >
+                  <Avatar src={profilePic} />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -66,10 +121,13 @@ const Topbar = () => {
                   horizontal: "right",
                 }}
                 open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
+                onClose={() => setAnchorElUser(null)}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                  <MenuItem
+                    key={setting}
+                    onClick={(e) => handleSelectMenuItem(e)}
+                  >
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>
                 ))}
