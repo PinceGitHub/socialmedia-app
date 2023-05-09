@@ -16,6 +16,7 @@ import { axiosPrivate } from "../../utils/axios-utils";
 import useAuth from "../../hooks/useAuth";
 import useLoader from "../../hooks/useLoader";
 import useSnackbar from "../../hooks/useSnackbar";
+import Disclaimer from "../../components/Disclaimer/Disclaimer";
 
 type SigninType = {
   email: string;
@@ -94,90 +95,93 @@ const Signin = () => {
   };
 
   return (
-    <Container>
-      <Wrapper>
-        <Avatar sx={{ bgcolor: "primary.main" }}>
-          <Lock />
-        </Avatar>
-        <Stack
-          direction="column"
-          component="form"
-          width="100%"
-          autoComplete="on"
-          onSubmit={(e) => handleSigninFormSubmit(e)}
-        >
-          <TextField
-            label="Email Address"
-            id="email"
-            name="email"
-            margin="normal"
-            required
-            fullWidth
-            autoFocus
-            variant="standard"
-            type="email"
-            inputProps={{ maxLength: 50 }}
-            value={email}
-            onChange={(e) =>
-              setSignin((prev) => ({ ...prev, email: e.target.value }))
-            }
-          />
-          <TextField
-            label="Password"
-            id="password"
-            name="password"
-            type="password"
-            margin="normal"
-            required
-            fullWidth
-            variant="standard"
-            inputProps={{ minLength: 6, maxLength: 20 }}
-            sx={{ mb: 2 }}
-            value={password}
-            onChange={(e) =>
-              setSignin((prev) => ({ ...prev, password: e.target.value }))
-            }
-          />
-          <FormControlLabel
-            sx={{ mb: 2 }}
-            id="rememberMe"
-            name="rememberMe"
-            control={
-              <Checkbox
-                checked={rememberMe}
-                onChange={(e) =>
-                  setSignin((prev) => ({
-                    ...prev,
-                    rememberMe: e.target.checked,
-                  }))
-                }
-              />
-            }
-            label="Remember me"
-          />
+    <>
+      <Disclaimer />
+      <Container>
+        <Wrapper>
+          <Avatar sx={{ bgcolor: "primary.main" }}>
+            <Lock />
+          </Avatar>
+          <Stack
+            direction="column"
+            component="form"
+            width="100%"
+            autoComplete="on"
+            onSubmit={(e) => handleSigninFormSubmit(e)}
+          >
+            <TextField
+              label="Email Address"
+              id="email"
+              name="email"
+              margin="normal"
+              required
+              fullWidth
+              autoFocus
+              variant="standard"
+              type="email"
+              inputProps={{ maxLength: 50 }}
+              value={email}
+              onChange={(e) =>
+                setSignin((prev) => ({ ...prev, email: e.target.value }))
+              }
+            />
+            <TextField
+              label="Password"
+              id="password"
+              name="password"
+              type="password"
+              margin="normal"
+              required
+              fullWidth
+              variant="standard"
+              inputProps={{ minLength: 6, maxLength: 20 }}
+              sx={{ mb: 2 }}
+              value={password}
+              onChange={(e) =>
+                setSignin((prev) => ({ ...prev, password: e.target.value }))
+              }
+            />
+            <FormControlLabel
+              sx={{ mb: 2 }}
+              id="rememberMe"
+              name="rememberMe"
+              control={
+                <Checkbox
+                  checked={rememberMe}
+                  onChange={(e) =>
+                    setSignin((prev) => ({
+                      ...prev,
+                      rememberMe: e.target.checked,
+                    }))
+                  }
+                />
+              }
+              label="Remember me"
+            />
 
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mb: 2, height: "50px" }}
-          >
-            Sign In
-          </Button>
-          <Link
-            style={{
-              textDecoration: "none",
-              color: "#1976d2",
-              marginBottom: "16px",
-              textAlign: "center",
-            }}
-            to={appUrls.signUp}
-          >
-            SIGN UP
-          </Link>
-        </Stack>
-      </Wrapper>
-    </Container>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mb: 2, height: "50px" }}
+            >
+              Sign In
+            </Button>
+            <Link
+              style={{
+                textDecoration: "none",
+                color: "#1976d2",
+                marginBottom: "16px",
+                textAlign: "center",
+              }}
+              to={appUrls.signUp}
+            >
+              SIGN UP
+            </Link>
+          </Stack>
+        </Wrapper>
+      </Container>
+    </>
   );
 };
 
