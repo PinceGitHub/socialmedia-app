@@ -100,6 +100,7 @@ const Friend = ({ user, fullName, profilePicName }: FriendPropsType) => {
         <UserChat
           openUserChatDialog={openUserChatDialog}
           setOpenUserChatDialog={setOpenUserChatDialog}
+          user={user}
           profilePic={profilePic}
           fullName={fullName}
         />

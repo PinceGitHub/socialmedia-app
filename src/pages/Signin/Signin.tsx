@@ -16,7 +16,7 @@ import { axiosPrivate } from "../../utils/axios-utils";
 import useAuth from "../../hooks/useAuth";
 import useLoader from "../../hooks/useLoader";
 import useSnackbar from "../../hooks/useSnackbar";
-import Disclaimer from "../../components/Disclaimer/Disclaimer";
+import Disclaimer from "../../dialogs/Disclaimer/Disclaimer";
 
 type SigninType = {
   email: string;

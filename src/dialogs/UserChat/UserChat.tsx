@@ -23,10 +23,17 @@ import {
 } from "./UserChat.style";
 
 import { forwardRef, useRef, useEffect, useState } from "react";
+import useSnackbar from "../../hooks/useSnackbar";
+import useLoader from "../../hooks/useLoader";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { serviceUrls } from "../../utils/app-utils";
+import useAuth from "../../hooks/useAuth";
+import moment from "moment";
 
 type UserChatPropsType = {
   openUserChatDialog: boolean;
   setOpenUserChatDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  user: string;
   profilePic: string | null;
   fullName: string;
 };
@@ -60,16 +67,113 @@ const Message = ({ own, text, time }: MessagePropsType) => {
 const UserChat = ({
   openUserChatDialog,
   setOpenUserChatDialog,
+  user,
   profilePic,
   fullName,
 }: UserChatPropsType) => {
-  const [conversationId, setConversationId] = useState<string | null>(null);
   const scrollRef = useRef(null);
+  const snackbar = useSnackbar();
+  const showLoader = useLoader();
+  const axios = useAxiosPrivate();
+  const { auth } = useAuth();
+
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Array<{
+    _id: string;
+    conversationId: string;
+    sender: string;
+    text: string;
+    createdAt: string;
+  }> | null>(null);
 
   useEffect(() => {
-    const currentScroll: any = scrollRef.current;
-    currentScroll && currentScroll.scrollIntoView({ behavior: "smooth" });
-  }, []);
+    const fetchMessages = async () => {
+      try {
+        showLoader(true);
+
+        const members = [user, auth?.userId];
+        const resp = await axios({
+          url: serviceUrls.chat.getMessages.path,
+          method: serviceUrls.chat.getMessages.method,
+          data: { members },
+        });
+
+        setConversationId(resp.data.responseData?._id);
+        setMessages(resp.data.responseData?.messages);
+      } catch (error: any) {
+        snackbar({
+          show: true,
+          messageType: "error",
+          message: error.response?.data?.message || error.message,
+        });
+      } finally {
+        showLoader(false);
+      }
+    };
+
+    fetchMessages();
+
+    //eslint-disable-next-line
+  }, [user]);
+
+  useEffect(() => {
+    if (messages?.length) {
+      const dummyDiv: any = scrollRef.current;
+      dummyDiv && dummyDiv.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  const handleCreateConversation = async () => {
+    try {
+      showLoader(true);
+
+      const members = [user, auth?.userId];
+      const resp = await axios({
+        url: serviceUrls.chat.createConversation.path,
+        method: serviceUrls.chat.createConversation.method,
+        data: { members },
+      });
+
+      setConversationId(resp.data.responseData._id);
+    } catch (error: any) {
+      snackbar({
+        show: true,
+        messageType: "error",
+        message: error.response?.data?.message || error.message,
+      });
+    } finally {
+      showLoader(false);
+    }
+  };
+
+  const [text, setText] = useState("");
+
+  const handleSendMessage = async () => {
+    try {
+      if (text.trim() !== "") {
+        const resp = await axios({
+          url: serviceUrls.chat.createMessage.path,
+          method: serviceUrls.chat.createMessage.method,
+          data: { conversationId, text },
+        });
+        const newMessage = {
+          _id: resp.data.responseData?._id,
+          conversationId: resp.data.responseData?.conversationId,
+          sender: resp.data.responseData?.sender,
+          text,
+          createdAt: resp.data.responseData?.createdAt,
+        };
+        setMessages(messages ? messages.concat(newMessage) : [newMessage]);
+        setText("");
+      }
+    } catch (error: any) {
+      snackbar({
+        show: true,
+        messageType: "error",
+        message: error.response?.data?.message || error.message,
+      });
+    }
+  };
 
   return (
     <Dialog
@@ -105,12 +209,18 @@ const UserChat = ({
       {conversationId ? (
         <ChatBoxWrapper>
           <ChatBoxTop>
-            <div ref={scrollRef}>
-              <Message own={true} text="Hi, I am Superman" time="2 min ago" />
-              <Message own={true} text="How are you?" time="2 min ago" />
-              <Message text="Hi, Superman, I am Batman" time="1 min ago" />
-              <Message text="I am fine, thank you" time="just now" />
-            </div>
+            {messages &&
+              messages.map((message) => {
+                return (
+                  <Message
+                    key={message._id}
+                    own={message.sender === auth?.userId}
+                    text={message.text}
+                    time={moment(new Date(message.createdAt)).fromNow()}
+                  />
+                );
+              })}
+            <div style={{ float: "left", clear: "both" }} ref={scrollRef} />
           </ChatBoxTop>
           <ChatBoxBottom>
             <TextField
@@ -119,15 +229,22 @@ const UserChat = ({
               sx={{ width: "80%", mr: "8px", mb: "3px" }}
               placeholder="Enter your message here..."
               autoFocus
+              value={text}
+              onChange={(e) => setText(e.target.value)}
             />
-            <Button sx={{ mb: "3px" }} size="small" variant="contained">
+            <Button
+              sx={{ mb: "3px" }}
+              size="small"
+              variant="contained"
+              onClick={handleSendMessage}
+            >
               Send
             </Button>
           </ChatBoxBottom>
         </ChatBoxWrapper>
       ) : (
         <ConversationWrapper>
-          <Button variant="contained" onClick={() => setConversationId("1")}>
+          <Button variant="contained" onClick={handleCreateConversation}>
             To begin the conversation, please click here.
           </Button>
         </ConversationWrapper>

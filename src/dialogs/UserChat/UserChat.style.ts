@@ -47,7 +47,7 @@ export const MessageWrapper = styled(Stack)(() => ({
 export const MessageText = styled(Typography)(() => ({
   padding: "10px",
   borderRadius: "5px",
-  maxWidth: "300px",
+  maxWidth: "350px",
   color: "white",
 }));
 

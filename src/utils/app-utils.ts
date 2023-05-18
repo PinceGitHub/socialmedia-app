@@ -64,4 +64,18 @@ export const serviceUrls = {
       method: "PUT",
     },
   },
+  chat: {
+    createConversation: {
+      path: "/chat/create-conversation",
+      method: "POST",
+    },
+    createMessage: {
+      path: "/chat/create-message",
+      method: "POST",
+    },
+    getMessages: {
+      path: "/chat/",
+      method: "POST",
+    },
+  },
 };

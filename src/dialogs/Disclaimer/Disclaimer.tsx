@@ -60,7 +60,7 @@ const Disclaimer = () => {
         </DialogContentText>
         <DialogContentText mt={1}>
           You can explore the application using the existing user credentials
-          shown below, or you can register yourself.
+          shown below.
         </DialogContentText>
         <DialogContentText mt={1}>
           1. email: superman@jloa.com; password: superman
