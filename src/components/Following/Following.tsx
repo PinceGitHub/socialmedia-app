@@ -2,14 +2,15 @@ import {
   Container,
   FollowingList,
   FollowingListItem,
-  OnlineBadge,
+  // OnlineBadge,
 } from "./Following.style";
-import { Typography, Avatar } from "@mui/material";
+import { Typography, Avatar, Fade, Menu, MenuItem } from "@mui/material";
 
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { appUrls } from "../../utils/app-utils";
 import { useEffect, useState } from "react";
 import usePics from "../../hooks/usePics";
+import UserChat from "../../dialogs/UserChat/UserChat";
 
 type FollowingPropsType = {
   followings: Array<FollowingType>;
@@ -39,22 +40,71 @@ const Friend = ({ user, fullName, profilePicName }: FriendPropsType) => {
     }
   }, [user, profilePicName, pics]);
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const navigate = useNavigate();
+  const [openUserChatDialog, setOpenUserChatDialog] = useState(false);
+
+  const handleOpenOptions = (e: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleCloseOptions = () => {
+    setAnchorEl(null);
+  };
+
+  const handleSelectMenuItem = async (
+    e: React.MouseEvent<HTMLLIElement, MouseEvent>
+  ) => {
+    setAnchorEl(null);
+    const selectedOption = e.currentTarget.innerText;
+
+    if (selectedOption.toLowerCase() === "profile") {
+      navigate(appUrls.profile.replace(":id", user));
+    } else {
+      setOpenUserChatDialog(true);
+    }
+  };
+
   return (
-    <FollowingListItem>
-      {/* <OnlineBadge
+    <>
+      <FollowingListItem>
+        {/* <OnlineBadge
         overlap="circular"
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         variant="dot"
       > */}
-      <Link
-        to={appUrls.profile.replace(":id", user)}
-        style={{ textDecoration: "none" }}
-      >
-        <Avatar alt={fullName} src={profilePic || ""} sx={{ mr: "10px" }} />
-      </Link>
-      {/* </OnlineBadge> */}
-      <Typography>{fullName}</Typography>
-    </FollowingListItem>
+        <Avatar
+          alt={fullName}
+          src={profilePic || ""}
+          sx={{ mr: "10px", cursor: "pointer" }}
+          onClick={(e) => handleOpenOptions(e)}
+        />
+        <Menu
+          id="fade-menu"
+          MenuListProps={{
+            "aria-labelledby": "fade-button",
+          }}
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleCloseOptions}
+          TransitionComponent={Fade}
+        >
+          <MenuItem onClick={(e) => handleSelectMenuItem(e)}>Profile</MenuItem>
+          <MenuItem onClick={(e) => handleSelectMenuItem(e)}>Chat</MenuItem>
+        </Menu>
+        {/* </OnlineBadge> */}
+        <Typography>{fullName}</Typography>
+      </FollowingListItem>
+      {openUserChatDialog && (
+        <UserChat
+          openUserChatDialog={openUserChatDialog}
+          setOpenUserChatDialog={setOpenUserChatDialog}
+          profilePic={profilePic}
+          fullName={fullName}
+        />
+      )}
+    </>
   );
 };
 
