@@ -1,4 +1,5 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
+import { io, Socket } from "socket.io-client";
 
 type AuthUser = {
   userId: string;
@@ -27,6 +28,7 @@ type AuthProviderType = {
   setFetchTokenResp: React.Dispatch<
     React.SetStateAction<FetchTokenResponseType>
   >;
+  socket: Socket<any, any> | null;
 };
 
 const AuthContext = createContext<AuthProviderType | null>(null);
@@ -43,6 +45,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     fetched: false,
     isSuccessful: false,
   });
+  const [socket, setSocket] = useState<Socket<any, any> | null>(null);
+
+  useEffect(() => {
+    if (auth && socket === null) {
+      const socket = io(String(process.env.REACT_APP_SOCKET_HOST), {
+        auth: {
+          token: `Bearer ${auth.accessToken}`,
+        },
+      });
+
+      socket.once("connect", () => {
+        socket.emit("addUser", auth.userId, (resp: any) => {
+          setSocket(socket);
+        });
+      });
+    }
+  }, [auth, socket]);
 
   return (
     <AuthContext.Provider
@@ -53,6 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setPersist,
         fetchTokenResp,
         setFetchTokenResp,
+        socket,
       }}
     >
       {children}
