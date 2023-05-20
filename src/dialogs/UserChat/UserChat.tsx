@@ -75,7 +75,7 @@ const UserChat = ({
   const snackbar = useSnackbar();
   const showLoader = useLoader();
   const axios = useAxiosPrivate();
-  const { auth } = useAuth();
+  const { auth, socket, setReconnectSocket } = useAuth();
 
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Array<{
@@ -85,6 +85,21 @@ const UserChat = ({
     text: string;
     createdAt: string;
   }> | null>(null);
+
+  useEffect(() => {
+    if (socket?.connected) {
+      socket.on("getMessage", (resp: any) => {
+        resp?.message &&
+          setMessages((prev) => {
+            return prev ? prev.concat(resp.message) : [resp.message];
+          });
+      });
+    } else {
+      setReconnectSocket(true);
+    }
+
+    //eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -119,7 +134,7 @@ const UserChat = ({
   useEffect(() => {
     if (messages?.length) {
       const dummyDiv: any = scrollRef.current;
-      dummyDiv && dummyDiv.scrollIntoView({ behavior: "smooth" });
+      dummyDiv?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
@@ -163,6 +178,13 @@ const UserChat = ({
           text,
           createdAt: resp.data.responseData?.createdAt,
         };
+
+        if (socket?.connected) {
+          socket.emit("sendMessage", auth?.userId, user, newMessage);
+        } else {
+          setReconnectSocket(true);
+        }
+
         setMessages(messages ? messages.concat(newMessage) : [newMessage]);
         setText("");
       }
@@ -209,17 +231,16 @@ const UserChat = ({
       {conversationId ? (
         <ChatBoxWrapper>
           <ChatBoxTop>
-            {messages &&
-              messages.map((message) => {
-                return (
-                  <Message
-                    key={message._id}
-                    own={message.sender === auth?.userId}
-                    text={message.text}
-                    time={moment(new Date(message.createdAt)).fromNow()}
-                  />
-                );
-              })}
+            {messages?.map((message) => {
+              return (
+                <Message
+                  key={message._id}
+                  own={message.sender === auth?.userId}
+                  text={message.text}
+                  time={moment(new Date(message.createdAt)).fromNow()}
+                />
+              );
+            })}
             <div style={{ float: "left", clear: "both" }} ref={scrollRef} />
           </ChatBoxTop>
           <ChatBoxBottom>

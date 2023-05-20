@@ -220,7 +220,7 @@ const Profile = () => {
               {`${userInfo.firstName} ${userInfo.lastName}`}
             </Typography>
             <Typography mb={1}>{userInfo.description || ""}</Typography>
-            {auth && auth.userId === id ? (
+            {auth?.userId === id ? (
               <Button
                 variant="outlined"
                 startIcon={<Edit />}

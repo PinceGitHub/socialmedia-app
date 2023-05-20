@@ -2,7 +2,7 @@ import {
   Container,
   FollowingList,
   FollowingListItem,
-  // OnlineBadge,
+  OnlineBadge,
 } from "./Following.style";
 import { Typography, Avatar, Fade, Menu, MenuItem } from "@mui/material";
 
@@ -11,6 +11,7 @@ import { appUrls } from "../../utils/app-utils";
 import { useEffect, useState } from "react";
 import usePics from "../../hooks/usePics";
 import UserChat from "../../dialogs/UserChat/UserChat";
+import useAuth from "../../hooks/useAuth";
 
 type FollowingPropsType = {
   followings: Array<FollowingType>;
@@ -32,9 +33,11 @@ type FriendPropsType = {
 const Friend = ({ user, fullName, profilePicName }: FriendPropsType) => {
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const { pics } = usePics();
+  const { auth, onlineUsers } = useAuth();
+  const isOnline = onlineUsers?.find((userId) => userId === user);
 
   useEffect(() => {
-    if (profilePicName && profilePicName.trim() !== "") {
+    if (profilePicName?.trim() !== "") {
       const profilePicUrl = pics.get(`${user}_profile_${profilePicName}`);
       profilePicUrl && setProfilePic(profilePicUrl);
     }
@@ -62,38 +65,41 @@ const Friend = ({ user, fullName, profilePicName }: FriendPropsType) => {
     if (selectedOption.toLowerCase() === "profile") {
       navigate(appUrls.profile.replace(":id", user));
     } else {
-      setOpenUserChatDialog(true);
+      auth?.userId !== user && setOpenUserChatDialog(true);
     }
   };
 
   return (
     <>
       <FollowingListItem>
-        {/* <OnlineBadge
-        overlap="circular"
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        variant="dot"
-      > */}
-        <Avatar
-          alt={fullName}
-          src={profilePic || ""}
-          sx={{ mr: "10px", cursor: "pointer" }}
-          onClick={(e) => handleOpenOptions(e)}
-        />
-        <Menu
-          id="fade-menu"
-          MenuListProps={{
-            "aria-labelledby": "fade-button",
-          }}
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleCloseOptions}
-          TransitionComponent={Fade}
+        <OnlineBadge
+          overlap="circular"
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          variant="dot"
+          badgecolor={isOnline ? "limegreen" : "lightgray"}
         >
-          <MenuItem onClick={(e) => handleSelectMenuItem(e)}>Profile</MenuItem>
-          <MenuItem onClick={(e) => handleSelectMenuItem(e)}>Chat</MenuItem>
-        </Menu>
-        {/* </OnlineBadge> */}
+          <Avatar
+            alt={fullName}
+            src={profilePic || ""}
+            sx={{ mr: "10px", cursor: "pointer" }}
+            onClick={(e) => handleOpenOptions(e)}
+          />
+          <Menu
+            id="fade-menu"
+            MenuListProps={{
+              "aria-labelledby": "fade-button",
+            }}
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleCloseOptions}
+            TransitionComponent={Fade}
+          >
+            <MenuItem onClick={(e) => handleSelectMenuItem(e)}>
+              Profile
+            </MenuItem>
+            <MenuItem onClick={(e) => handleSelectMenuItem(e)}>Chat</MenuItem>
+          </Menu>
+        </OnlineBadge>
         <Typography>{fullName}</Typography>
       </FollowingListItem>
       {openUserChatDialog && (

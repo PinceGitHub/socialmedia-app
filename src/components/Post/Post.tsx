@@ -56,7 +56,7 @@ const Post = (props: PostPropsType) => {
 
   useEffect(() => {
     //putting a profile photo in
-    if (props.profilePicture && props.profilePicture.trim() !== "") {
+    if (props.profilePicture?.trim() !== "") {
       const profilePicUrl = pics.get(
         `${props.user}_profile_${props.profilePicture}`
       );
@@ -64,7 +64,7 @@ const Post = (props: PostPropsType) => {
     }
 
     //allocating the post's image
-    if (props.image && props.image.trim() !== "") {
+    if (props.image?.trim() !== "") {
       const postImgUrl = pics.get(`${props.user}_post_${props.image}`);
       postImgUrl && setPostImg(postImgUrl);
     }
@@ -158,7 +158,7 @@ const Post = (props: PostPropsType) => {
             <Typography mr={1} fontSize="12px">
               {moment(new Date(props.createdAt)).fromNow()}
             </Typography>
-            {auth && auth.userId === props.user && (
+            {auth?.userId === props.user && (
               <Delete
                 sx={{ color: "red", fontSize: "15px", cursor: "pointer" }}
                 onClick={handleDeletePost}

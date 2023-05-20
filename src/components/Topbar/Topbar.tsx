@@ -25,7 +25,7 @@ import { axiosPrivate } from "../../utils/axios-utils";
 const settings = ["Profile", "Logout"];
 
 const Topbar = () => {
-  const { auth, setAuth, setFetchTokenResp } = useAuth();
+  const { auth, setAuth, setFetchTokenResp, socket } = useAuth();
   const navigate = useNavigate();
   const { pics } = usePics();
   const getPic = useDownloadImg();
@@ -69,6 +69,10 @@ const Topbar = () => {
 
         setAuth(null);
         setFetchTokenResp({ fetched: true, isSuccessful: false });
+
+        if (socket?.connected) {
+          socket.disconnect();
+        }
         navigate(appUrls.signIn);
       } catch (error: any) {
         snackbar({

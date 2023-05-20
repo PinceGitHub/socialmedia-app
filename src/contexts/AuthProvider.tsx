@@ -29,6 +29,8 @@ type AuthProviderType = {
     React.SetStateAction<FetchTokenResponseType>
   >;
   socket: Socket<any, any> | null;
+  setReconnectSocket: React.Dispatch<React.SetStateAction<boolean>>;
+  onlineUsers: Array<string> | null;
 };
 
 const AuthContext = createContext<AuthProviderType | null>(null);
@@ -46,9 +48,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     isSuccessful: false,
   });
   const [socket, setSocket] = useState<Socket<any, any> | null>(null);
+  const [reconnectSocket, setReconnectSocket] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState<Array<string> | null>(null);
 
   useEffect(() => {
-    if (auth && socket === null) {
+    if (auth && (reconnectSocket || socket === null || socket.disconnected)) {
       const socket = io(String(process.env.REACT_APP_SOCKET_HOST), {
         auth: {
           token: `Bearer ${auth.accessToken}`,
@@ -56,12 +60,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       socket.once("connect", () => {
-        socket.emit("addUser", auth.userId, (resp: any) => {
-          setSocket(socket);
+        reconnectSocket && setReconnectSocket(false);
+        setSocket(socket);
+        socket.emit("addUser", auth.userId);
+        socket.on("getOnlineUsers", (users) => {
+          setOnlineUsers(users);
         });
       });
     }
-  }, [auth, socket]);
+  }, [auth, socket, reconnectSocket]);
 
   return (
     <AuthContext.Provider
@@ -73,6 +80,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         fetchTokenResp,
         setFetchTokenResp,
         socket,
+        setReconnectSocket,
+        onlineUsers,
       }}
     >
       {children}

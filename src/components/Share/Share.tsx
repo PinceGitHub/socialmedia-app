@@ -39,7 +39,7 @@ const Share = ({ setRefetch }: SharePropsType) => {
     const authUser = auth?.userId;
     const authUserProfilePic = auth?.profilePicture;
 
-    if (authUser && authUserProfilePic && authUserProfilePic.trim() !== "") {
+    if (authUser && authUserProfilePic?.trim() !== "") {
       const profilePicUrl = pics.get(
         `${authUser}_profile_${authUserProfilePic}`
       );
