@@ -132,16 +132,14 @@ describe("Signin", () => {
     const testEmail = "email@test.com";
     await user.type(emailAddrInpEl, testEmail);
     await waitFor(() => {
-      const emailAddrInpElWithTestValue = screen.getByDisplayValue(testEmail);
-      expect(emailAddrInpElWithTestValue).toBeInTheDocument();
+      expect(emailAddrInpEl).toHaveValue(testEmail);
     });
 
     const passwordInpEl = screen.getByLabelText(/password/i);
     const testPassword = "testpassword";
     await user.type(passwordInpEl, testPassword);
     await waitFor(() => {
-      const passwordInpElWithTestValue = screen.getByDisplayValue(testPassword);
-      expect(passwordInpElWithTestValue).toBeInTheDocument();
+      expect(passwordInpEl).toHaveValue(testPassword);
     });
 
     const remembermeChkBoxEl = screen.getByRole("checkbox", {
