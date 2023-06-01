@@ -34,6 +34,18 @@ jest.mock("../../utils/axios-utils", () => {
   };
 });
 
+jest.mock("../../hooks/useAuth", () => {
+  return {
+    __esModule: true,
+    default: () => ({
+      persist: false,
+      setPersist: jest.fn(),
+      setFetchTokenResp: jest.fn(),
+      setAuth: jest.fn(),
+    }),
+  };
+});
+
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   __esModule: true,
@@ -172,6 +184,7 @@ describe("Signin", () => {
         },
       },
     });
+
     await user.click(signinBtnEl);
     expect(mockedNavigate).toHaveBeenCalledTimes(1);
   });
