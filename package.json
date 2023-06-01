@@ -29,7 +29,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "coverage": "npm test -- --coverage --watchAll"
   },
   "eslintConfig": {
     "extends": [
@@ -47,6 +48,18 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/components/**/*.{ts,tsx}",
+      "src/contexts/*.tsx",
+      "src/dialogs/**/*.{ts,tsx}",
+      "src/hooks/*.tsx",
+      "src/pages/**/*.{ts,tsx}",
+      "!src/components/**/*.{types,style,stories,constants,test,spec}.{ts,tsx}",
+      "!src/dialogs/**/*.{types,style,stories,constants,test,spec}.{ts,tsx}",
+      "!src/pages/**/*.{types,style,stories,constants,test,spec}.{ts,tsx}"
     ]
   }
 }

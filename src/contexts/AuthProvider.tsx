@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import { io, Socket } from "socket.io-client";
+import io, { Socket } from "socket.io-client";
 
 type AuthUser = {
   userId: string;
